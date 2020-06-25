@@ -1,22 +1,24 @@
 version: "3"
 services:
-  mongodb:
-    image: mongo
-    ports:
-        - "27017:27017"
-    container_name: bookmark-mongodb
-    network_mode: "bridge"
-  node:
-    image: node:8-alpine
-    network_mode: "bridge"
+  mysql:
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password --init-file /data/application/init.sql
     volumes:
-        - ./web:/web
-        - /tmp:/tmp
+      - ./infra/init.sql:/data/application/init.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: clean_architecture_go_v2
+      MYSQL_DATABASE: clean_architecture_go_v2
+      MYSQL_USER: clean_architecture_go_v2
+      MYSQL_PASSWORD: clean_architecture_go_v2
+    ports:
+      - "3306:3306"
+    container_name: clean-architecture-go-v2-mysql
+    network_mode: "bridge"
   grafana:
     image: grafana/grafana
     ports:
       - "3000:3000"
-    container_name: bookmark-grafana
+    container_name: clean-architecture-go-v2-grafana
     network_mode: "bridge"
     depends_on:
       - prometheus
@@ -29,11 +31,11 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
     volumes:
       - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    container_name: bookmark-prometheus
+    container_name: clean-architecture-go-v2-prometheus
     network_mode: "bridge"
   prometheus-pushgateway:
     image: prom/pushgateway
-    container_name: bookmark-pushgateway
+    container_name: clean-architecture-go-v2-pushgateway
     expose:
       - 9091
     ports:

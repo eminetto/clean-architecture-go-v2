@@ -36,7 +36,6 @@ build-mocks:
 	@~/go/bin/mockgen -source=domain/entity/user/interface.go -destination=domain/entity/user/mock/user.go -package=mock
 	@~/go/bin/mockgen -source=domain/loan/interface.go -destination=domain/loan/mock/loan.go -package=mock
 
-
 test:
 	go test -tags testing ./...
 

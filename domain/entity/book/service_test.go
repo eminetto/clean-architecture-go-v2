@@ -1,8 +1,9 @@
 package book
 
 import (
-	"github.com/eminetto/clean-architecture-go-v2/domain"
 	"testing"
+
+	"github.com/eminetto/clean-architecture-go-v2/domain"
 
 	"github.com/stretchr/testify/assert"
 )
