@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/eminetto/clean-architecture-go/pkg/metric"
+	"github.com/eminetto/clean-architecture-go-v2/pkg/metric"
 
 	"github.com/codegangsta/negroni"
 )

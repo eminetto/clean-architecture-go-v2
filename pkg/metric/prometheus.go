@@ -1,9 +1,9 @@
 package metric
 
 import (
+	"github.com/eminetto/clean-architecture-go-v2/config"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/push"
-	"github.com/eminetto/clean-architecture-go/config"
 )
 
 //Service implements UseCase interface

@@ -19,42 +19,39 @@ Clean Architecture sample
 
 ## API requests 
 
-### Add a bookmark
+### Add a book
 
 ```
-curl -X "POST" "http://localhost:8080/v1/bookmark" \
+curl -X "POST" "http://localhost:8080/v1/book" \
      -H 'Content-Type: application/json' \
      -H 'Accept: application/json' \
      -d $'{
-  "tags": [
-    "git",
-    "social"
-  ],
-  "name": "Github",
-  "description": "Github site",
-  "link": "http://github.com"
+  "title": "I Am Ozzy",
+  "author": "Ozzy Osbourne",
+  "pages": 294,
+  "quantity":1
 }'
 ```
-### Search a bookmark
+### Search a book
 
 ```
-curl "http://localhost:8080/v1/bookmark?name=github" \
+curl "http://localhost:8080/v1/book?title=ozzy" \
      -H 'Content-Type: application/json' \
      -H 'Accept: application/json'
 ```
 
-### Show all bookmarks
+### Show all books
 
 ```
-curl "http://localhost:8080/v1/bookmark" \
+curl "http://localhost:8080/v1/book" \
      -H 'Content-Type: application/json' \
      -H 'Accept: application/json'
 ```
 
 ## CMD 
 
-### Search for a bookmark
+### Search for a book
 
 ```
-./bin/search github
+./bin/search ozzy
 ```

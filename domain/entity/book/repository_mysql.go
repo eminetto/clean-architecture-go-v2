@@ -84,7 +84,27 @@ func (r *MySQLRepo) Search(query string) ([]*Book, error) {
 
 //List users
 func (r *MySQLRepo) List() ([]*Book, error) {
-	return nil, nil
+	stmt, err := r.db.Prepare(`select id, title, author, pages, quantity, created_at from book`)
+	if err != nil {
+		return nil, err
+	}
+	var books []*Book
+	rows, err := stmt.Query()
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var b Book
+		err = rows.Scan(&b.ID, &b.Title, &b.Author, &b.Pages, &b.Quantity, &b.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		books = append(books, &b)
+	}
+	if len(books) == 0 {
+		return nil, domain.ErrNotFound
+	}
+	return books, nil
 }
 
 //Delete an user

@@ -1,53 +1,62 @@
 package main
 
 import (
-	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 
+	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
+
+	"github.com/eminetto/clean-architecture-go-v2/domain/entity/book"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 	"github.com/codegangsta/negroni"
-	"github.com/eminetto/clean-architecture-go/api/handler"
-	"github.com/eminetto/clean-architecture-go/config"
-	"github.com/eminetto/clean-architecture-go/pkg/bookmark"
-	"github.com/eminetto/clean-architecture-go/pkg/middleware"
-	"github.com/eminetto/clean-architecture-go/pkg/metric"
+	"github.com/eminetto/clean-architecture-go-v2/api/handler"
+	"github.com/eminetto/clean-architecture-go-v2/api/middleware"
+	"github.com/eminetto/clean-architecture-go-v2/config"
+	"github.com/eminetto/clean-architecture-go-v2/pkg/metric"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
-	"github.com/juju/mgosession"
-	mgo "gopkg.in/mgo.v2"
 )
 
 func main() {
-	session, err := mgo.Dial(config.MONGODB_HOST)
+
+	dataSourceName := fmt.Sprintf("%s:%s@tcp(%s:3306)/%s?parseTime=true", config.DB_USER, config.DB_PASSWORD, config.DB_HOST, config.DB_DATABASE)
+	db, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	defer session.Close()
+	defer db.Close()
 
-	r := mux.NewRouter()
+	bookRepo := book.NewMySQLRepoRepository(db)
+	bookService := book.NewService(bookRepo)
 
-	mPool := mgosession.NewPool(nil, session, config.MONGODB_CONNECTION_POOL)
-	defer mPool.Close()
+	userRepo := user.NewMySQLRepoRepository(db)
+	userService := user.NewService(userRepo)
 
-	bookmarkRepo := bookmark.NewMongoRepository(mPool, config.MONGODB_DATABASE)
-	bookmarkService := bookmark.NewService(bookmarkRepo)
+	//loanService := loan.NewService(userService, bookService)
 
 	metricService, err := metric.NewPrometheusService()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-
+	r := mux.NewRouter()
 	//handlers
 	n := negroni.New(
 		negroni.HandlerFunc(middleware.Cors),
 		negroni.HandlerFunc(middleware.Metrics(metricService)),
 		negroni.NewLogger(),
 	)
-	//bookmark
-	handler.MakeBookmarkHandlers(r, *n, bookmarkService)
+	//book
+	handler.MakeBookHandlers(r, *n, bookService)
+
+	//user
+	handler.MakeUserHandlers(r, *n, userService)
 
 	http.Handle("/", r)
 	http.Handle("/metrics", promhttp.Handler())
