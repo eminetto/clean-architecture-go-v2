@@ -1,0 +1,40 @@
+version: "3"
+services:
+  mongodb:
+    image: mongo
+    ports:
+        - "27017:27017"
+    container_name: bookmark-mongodb
+    network_mode: "bridge"
+  node:
+    image: node:8-alpine
+    network_mode: "bridge"
+    volumes:
+        - ./web:/web
+        - /tmp:/tmp
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    container_name: bookmark-grafana
+    network_mode: "bridge"
+    depends_on:
+      - prometheus
+      - prometheus-pushgateway
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    container_name: bookmark-prometheus
+    network_mode: "bridge"
+  prometheus-pushgateway:
+    image: prom/pushgateway
+    container_name: bookmark-pushgateway
+    expose:
+      - 9091
+    ports:
+      - "9091:9091"
