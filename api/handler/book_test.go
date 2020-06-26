@@ -20,14 +20,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_BookIndex(t *testing.T) {
+func Test_listBooks(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
 	service := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
 	MakeBookHandlers(r, *n, service)
-	path, err := r.GetRoute("bookIndex").GetPathTemplate()
+	path, err := r.GetRoute("listBooks").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book", path)
 	b := book.NewFixtureBook()
@@ -41,7 +41,7 @@ func Test_BookIndex(t *testing.T) {
 	assert.Equal(t, http.StatusOK, res.StatusCode)
 }
 
-func Test_BookIndexNotFound(t *testing.T) {
+func Test_listBooks_NotFound(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
 	service := mock.NewMockUseCase(controller)
@@ -55,7 +55,7 @@ func Test_BookIndexNotFound(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)
 }
 
-func Test_BookSearch(t *testing.T) {
+func Test_listBooks_Search(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
 	service := mock.NewMockUseCase(controller)
@@ -70,14 +70,14 @@ func Test_BookSearch(t *testing.T) {
 	assert.Equal(t, http.StatusOK, res.StatusCode)
 }
 
-func Test_BookAdd(t *testing.T) {
+func Test_createBook(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
 	service := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
 	MakeBookHandlers(r, *n, service)
-	path, err := r.GetRoute("bookAdd").GetPathTemplate()
+	path, err := r.GetRoute("createBook").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book", path)
 
@@ -102,14 +102,14 @@ func Test_BookAdd(t *testing.T) {
 	assert.Equal(t, "Ozzy Osbourne", b.Author)
 }
 
-func Test_BookFind(t *testing.T) {
+func Test_getBook(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
 	service := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
 	MakeBookHandlers(r, *n, service)
-	path, err := r.GetRoute("bookFind").GetPathTemplate()
+	path, err := r.GetRoute("getBook").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book/{id}", path)
 	b := book.NewFixtureBook()
@@ -129,14 +129,14 @@ func Test_BookFind(t *testing.T) {
 	assert.Equal(t, b.ID, d.ID)
 }
 
-func TestBookRemove(t *testing.T) {
+func Test_deleteBook(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
 	service := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
 	MakeBookHandlers(r, *n, service)
-	path, err := r.GetRoute("bookDelete").GetPathTemplate()
+	path, err := r.GetRoute("deleteBook").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book/{id}", path)
 	b := book.NewFixtureBook()

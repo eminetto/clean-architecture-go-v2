@@ -118,7 +118,6 @@ func getBook(service book.UseCase) http.Handler {
 			return
 		}
 		data, err := service.Get(id)
-		w.Header().Set("Content-Type", "application/json")
 		if err != nil && err != domain.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))

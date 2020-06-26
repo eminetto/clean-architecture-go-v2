@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/eminetto/clean-architecture-go-v2/domain/loan"
+
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity/book"
@@ -39,7 +41,7 @@ func main() {
 	userRepo := user.NewMySQLRepoRepository(db)
 	userService := user.NewService(userRepo)
 
-	//loanService := loan.NewService(userService, bookService)
+	loanService := loan.NewService(userService, bookService)
 
 	metricService, err := metric.NewPrometheusService()
 	if err != nil {
@@ -57,6 +59,9 @@ func main() {
 
 	//user
 	handler.MakeUserHandlers(r, *n, userService)
+
+	//loan
+	handler.MakeLoanHandlers(r, *n, bookService, userService, loanService)
 
 	http.Handle("/", r)
 	http.Handle("/metrics", promhttp.Handler())
