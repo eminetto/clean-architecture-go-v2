@@ -1,0 +1,7 @@
+language: go
+
+go:
+  - "1.14.x"
+env:
+  - LIBRARY_ENV=testing
+script: env GO111MODULE=on make ci
