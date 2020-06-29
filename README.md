@@ -19,7 +19,7 @@ Clean Architecture sample
 
 ## API requests 
 
-### Add a book
+### Add book
 
 ```
 curl -X "POST" "http://localhost:8080/v1/book" \
@@ -32,7 +32,7 @@ curl -X "POST" "http://localhost:8080/v1/book" \
   "quantity":1
 }'
 ```
-### Search a book
+### Search book
 
 ```
 curl "http://localhost:8080/v1/book?title=ozzy" \
@@ -40,10 +40,41 @@ curl "http://localhost:8080/v1/book?title=ozzy" \
      -H 'Accept: application/json'
 ```
 
-### Show all books
+### Show books
 
 ```
 curl "http://localhost:8080/v1/book" \
+     -H 'Content-Type: application/json' \
+     -H 'Accept: application/json'
+```
+
+### Add user
+
+```
+curl -X "POST" "http://localhost:8080/v1/user" \
+     -H 'Content-Type: application/json' \
+     -H 'Accept: application/json' \
+     -d $'{
+  "email": "ozzy@metal.net",
+  "fist_name": "Ozzy",
+  "last_name": "Osbourne",
+  "password": "bateater666",
+  "quantity":1
+}'
+
+```
+### Search user
+
+```
+curl "http://localhost:8080/v1/user?name=ozzy" \
+     -H 'Content-Type: application/json' \
+     -H 'Accept: application/json'
+```
+
+### Show users
+
+```
+curl "http://localhost:8080/v1/user" \
      -H 'Content-Type: application/json' \
      -H 'Accept: application/json'
 ```
