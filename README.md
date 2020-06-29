@@ -4,11 +4,6 @@
 
 Clean Architecture sample
 
-## Post
-
-[https://medium.com/@eminetto/clean-architecture-using-golang-b63587aa5e3f](https://medium.com/@eminetto/clean-architecture-using-golang-b63587aa5e3f)
-
-
 ## Build
 
   make
