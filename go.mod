@@ -15,5 +15,6 @@ require (
 	github.com/juju/mgosession v0.0.0-20170206150231-9ae6df2882cd
 	github.com/prometheus/client_golang v1.7.1
 	github.com/stretchr/testify v1.6.1
+	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
 )

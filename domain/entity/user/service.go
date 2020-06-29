@@ -4,18 +4,22 @@ import (
 	"strings"
 	"time"
 
+	"github.com/eminetto/clean-architecture-go-v2/pkg/password"
+
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 )
 
 //Service service interface
 type Service struct {
 	repo Repository
+	pwd  password.UseCase
 }
 
 //NewService create new use case
-func NewService(r Repository) *Service {
+func NewService(r Repository, pwd password.UseCase) *Service {
 	return &Service{
 		repo: r,
+		pwd:  pwd,
 	}
 }
 
@@ -23,6 +27,11 @@ func NewService(r Repository) *Service {
 func (s *Service) Create(e *User) (entity.ID, error) {
 	e.ID = entity.NewID()
 	e.CreatedAt = time.Now()
+	pwd, err := s.pwd.Generate(e.Password)
+	if err != nil {
+		return e.ID, err
+	}
+	e.Password = pwd
 	return s.repo.Create(e)
 }
 

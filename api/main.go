@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/eminetto/clean-architecture-go-v2/pkg/password"
+
 	"github.com/eminetto/clean-architecture-go-v2/domain/loan"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
@@ -39,7 +41,7 @@ func main() {
 	bookService := book.NewService(bookRepo)
 
 	userRepo := user.NewMySQLRepoRepository(db)
-	userService := user.NewService(userRepo)
+	userService := user.NewService(userRepo, password.NewService())
 
 	loanService := loan.NewService(userService, bookService)
 

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
@@ -56,6 +57,7 @@ func borrowBook(bService book.UseCase, uService user.UseCase, loanService loan.U
 		}
 		err = loanService.Borrow(u, b)
 		if err != nil {
+			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return
