@@ -19,7 +19,7 @@ func Test_Borrow(t *testing.T) {
 	defer controller.Finish()
 	uMock := umock.NewMockUseCase(controller)
 	bMock := bmock.NewMockUseCase(controller)
-	service := NewService(uMock, bMock)
+	service := NewUseCase(uMock, bMock)
 	t.Run("user not found", func(t *testing.T) {
 		u := user.NewFixtureUser()
 		b := book.NewFixtureBook()
@@ -71,7 +71,7 @@ func Test_Return(t *testing.T) {
 	defer controller.Finish()
 	uMock := umock.NewMockUseCase(controller)
 	bMock := bmock.NewMockUseCase(controller)
-	service := NewService(uMock, bMock)
+	service := NewUseCase(uMock, bMock)
 	t.Run("book not found", func(t *testing.T) {
 		b := book.NewFixtureBook()
 		bMock.EXPECT().Get(b.ID).Return(nil, domain.ErrNotFound)

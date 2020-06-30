@@ -13,7 +13,7 @@ import (
 
 func Test_Create(t *testing.T) {
 	repo := NewInmemRepository()
-	service := NewService(repo, password.NewFakeService())
+	service := NewRepository(repo, password.NewFakeService())
 	u := NewFixtureUser()
 	id, err := service.Create(u)
 	assert.Nil(t, err)
@@ -24,7 +24,7 @@ func Test_Create(t *testing.T) {
 
 func Test_SearchAndFind(t *testing.T) {
 	repo := NewInmemRepository()
-	service := NewService(repo, password.NewFakeService())
+	service := NewRepository(repo, password.NewFakeService())
 	u1 := NewFixtureUser()
 	u2 := NewFixtureUser()
 	u2.FirstName = "Lemmy"
@@ -57,7 +57,7 @@ func Test_SearchAndFind(t *testing.T) {
 
 func Test_Update(t *testing.T) {
 	repo := NewInmemRepository()
-	service := NewService(repo, password.NewFakeService())
+	service := NewRepository(repo, password.NewFakeService())
 	u := NewFixtureUser()
 	id, err := service.Create(u)
 	assert.Nil(t, err)
@@ -74,7 +74,7 @@ func Test_Update(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	repo := NewInmemRepository()
-	service := NewService(repo, password.NewFakeService())
+	service := NewRepository(repo, password.NewFakeService())
 	u1 := NewFixtureUser()
 	u2 := NewFixtureUser()
 	u2ID, _ := service.Create(u2)

@@ -11,7 +11,7 @@ import (
 
 	"github.com/eminetto/clean-architecture-go-v2/pkg/password"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/loan"
+	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/loan"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
 
@@ -38,12 +38,12 @@ func main() {
 	defer db.Close()
 
 	bookRepo := book.NewMySQLRepoRepository(db)
-	bookService := book.NewService(bookRepo)
+	bookService := book.NewRepository(bookRepo)
 
 	userRepo := user.NewMySQLRepoRepository(db)
-	userService := user.NewService(userRepo, password.NewService())
+	userService := user.NewRepository(userRepo, password.NewService())
 
-	loanService := loan.NewService(userService, bookService)
+	loanService := loan.NewUseCase(userService, bookService)
 
 	metricService, err := metric.NewPrometheusService()
 	if err != nil {

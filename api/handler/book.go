@@ -17,7 +17,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func listBooks(service book.UseCase) http.Handler {
+func listBooks(service book.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error reading books"
 		var data []*book.Book
@@ -58,7 +58,7 @@ func listBooks(service book.UseCase) http.Handler {
 	})
 }
 
-func createBook(service book.UseCase) http.Handler {
+func createBook(service book.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error adding book"
 		var input struct {
@@ -107,7 +107,7 @@ func createBook(service book.UseCase) http.Handler {
 	})
 }
 
-func getBook(service book.UseCase) http.Handler {
+func getBook(service book.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error reading book"
 		vars := mux.Vars(r)
@@ -143,7 +143,7 @@ func getBook(service book.UseCase) http.Handler {
 	})
 }
 
-func deleteBook(service book.UseCase) http.Handler {
+func deleteBook(service book.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error removing bookmark"
 		vars := mux.Vars(r)
@@ -163,7 +163,7 @@ func deleteBook(service book.UseCase) http.Handler {
 }
 
 //MakeBookHandlers make url handlers
-func MakeBookHandlers(r *mux.Router, n negroni.Negroni, service book.UseCase) {
+func MakeBookHandlers(r *mux.Router, n negroni.Negroni, service book.Repository) {
 	r.Handle("/v1/book", n.With(
 		negroni.Wrap(listBooks(service)),
 	)).Methods("GET", "OPTIONS").Name("listBooks")

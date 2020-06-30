@@ -10,7 +10,7 @@ import (
 
 func Test_Create(t *testing.T) {
 	repo := NewInmemRepository()
-	service := NewService(repo)
+	service := NewRepository(repo)
 	u := NewFixtureBook()
 	id, err := service.Create(u)
 	assert.Nil(t, err)
@@ -20,7 +20,7 @@ func Test_Create(t *testing.T) {
 
 func Test_SearchAndFind(t *testing.T) {
 	repo := NewInmemRepository()
-	service := NewService(repo)
+	service := NewRepository(repo)
 	u1 := NewFixtureBook()
 	u2 := NewFixtureBook()
 	u2.Title = "Lemmy: Biography"
@@ -53,7 +53,7 @@ func Test_SearchAndFind(t *testing.T) {
 
 func Test_Update(t *testing.T) {
 	repo := NewInmemRepository()
-	service := NewService(repo)
+	service := NewRepository(repo)
 	u := NewFixtureBook()
 	id, err := service.Create(u)
 	assert.Nil(t, err)
@@ -67,7 +67,7 @@ func Test_Update(t *testing.T) {
 
 func TestDelete(t *testing.T) {
 	repo := NewInmemRepository()
-	service := NewService(repo)
+	service := NewRepository(repo)
 	u1 := NewFixtureBook()
 	u2 := NewFixtureBook()
 	u2ID, _ := service.Create(u2)

@@ -7,22 +7,21 @@ import (
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
 )
 
-//Service service interface
-type Service struct {
-	uService user.UseCase
-	bService book.UseCase
+type usecase struct {
+	uService user.Repository
+	bService book.Repository
 }
 
-//NewService create new use case
-func NewService(u user.UseCase, b book.UseCase) *Service {
-	return &Service{
+//NewUseCase create new use case
+func NewUseCase(u user.Repository, b book.Repository) *usecase {
+	return &usecase{
 		uService: u,
 		bService: b,
 	}
 }
 
 //Borrow borrow a book to an user
-func (s *Service) Borrow(u *user.User, b *book.Book) error {
+func (s *usecase) Borrow(u *user.User, b *book.Book) error {
 	u, err := s.uService.Get(u.ID)
 	if err != nil {
 		return err
@@ -53,7 +52,7 @@ func (s *Service) Borrow(u *user.User, b *book.Book) error {
 }
 
 //Return return a book
-func (s *Service) Return(b *book.Book) error {
+func (s *usecase) Return(b *book.Book) error {
 	b, err := s.bService.Get(b.ID)
 	if err != nil {
 		return err

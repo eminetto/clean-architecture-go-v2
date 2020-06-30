@@ -16,7 +16,7 @@ import (
 	"github.com/codegangsta/negroni"
 	bmock "github.com/eminetto/clean-architecture-go-v2/domain/entity/book/mock"
 	umock "github.com/eminetto/clean-architecture-go-v2/domain/entity/user/mock"
-	lmock "github.com/eminetto/clean-architecture-go-v2/domain/loan/mock"
+	lmock "github.com/eminetto/clean-architecture-go-v2/domain/usecase/loan/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"

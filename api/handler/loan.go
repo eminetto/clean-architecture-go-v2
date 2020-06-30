@@ -6,7 +6,7 @@ import (
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/loan"
+	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/loan"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain"
 
@@ -17,7 +17,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func borrowBook(bService book.UseCase, uService user.UseCase, loanService loan.UseCase) http.Handler {
+func borrowBook(bService book.Repository, uService user.Repository, loanService loan.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error borrowing book"
 		vars := mux.Vars(r)
@@ -66,7 +66,7 @@ func borrowBook(bService book.UseCase, uService user.UseCase, loanService loan.U
 	})
 }
 
-func returnBook(bService book.UseCase, loanService loan.UseCase) http.Handler {
+func returnBook(bService book.Repository, loanService loan.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error returning book"
 		vars := mux.Vars(r)
@@ -98,7 +98,7 @@ func returnBook(bService book.UseCase, loanService loan.UseCase) http.Handler {
 }
 
 //MakeLoanHandlers make url handlers
-func MakeLoanHandlers(r *mux.Router, n negroni.Negroni, bService book.UseCase, uService user.UseCase, loanService loan.UseCase) {
+func MakeLoanHandlers(r *mux.Router, n negroni.Negroni, bService book.Repository, uService user.Repository, loanService loan.UseCase) {
 	r.Handle("/v1/loan/borrow/{book_id}/{user_id}", n.With(
 		negroni.Wrap(borrowBook(bService, uService, loanService)),
 	)).Methods("GET", "OPTIONS").Name("borrowBook")

@@ -7,27 +7,27 @@ import (
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 )
 
-//IRepo in memory repo
-type IRepo struct {
+//iRepo in memory repo
+type iRepo struct {
 	m map[entity.ID]*Book
 }
 
 //NewInmemRepository create new repository
-func NewInmemRepository() *IRepo {
+func NewInmemRepository() *iRepo {
 	var m = map[entity.ID]*Book{}
-	return &IRepo{
+	return &iRepo{
 		m: m,
 	}
 }
 
 //Create a book
-func (r *IRepo) Create(e *Book) (entity.ID, error) {
+func (r *iRepo) Create(e *Book) (entity.ID, error) {
 	r.m[e.ID] = e
 	return e.ID, nil
 }
 
 //Get a book
-func (r *IRepo) Get(id entity.ID) (*Book, error) {
+func (r *iRepo) Get(id entity.ID) (*Book, error) {
 	if r.m[id] == nil {
 		return nil, domain.ErrNotFound
 	}
@@ -35,7 +35,7 @@ func (r *IRepo) Get(id entity.ID) (*Book, error) {
 }
 
 //Update a book
-func (r *IRepo) Update(e *Book) error {
+func (r *iRepo) Update(e *Book) error {
 	_, err := r.Get(e.ID)
 	if err != nil {
 		return err
@@ -45,7 +45,7 @@ func (r *IRepo) Update(e *Book) error {
 }
 
 //Search books
-func (r *IRepo) Search(query string) ([]*Book, error) {
+func (r *iRepo) Search(query string) ([]*Book, error) {
 	var d []*Book
 	for _, j := range r.m {
 		if strings.Contains(strings.ToLower(j.Title), query) {
@@ -60,7 +60,7 @@ func (r *IRepo) Search(query string) ([]*Book, error) {
 }
 
 //List books
-func (r *IRepo) List() ([]*Book, error) {
+func (r *iRepo) List() ([]*Book, error) {
 	var d []*Book
 	for _, j := range r.m {
 		d = append(d, j)
@@ -69,7 +69,7 @@ func (r *IRepo) List() ([]*Book, error) {
 }
 
 //Delete a book
-func (r *IRepo) Delete(id entity.ID) error {
+func (r *iRepo) Delete(id entity.ID) error {
 	if r.m[id] == nil {
 		return domain.ErrNotFound
 	}

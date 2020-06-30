@@ -18,7 +18,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func listUsers(service user.UseCase) http.Handler {
+func listUsers(service user.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error reading users"
 		var data []*user.User
@@ -58,7 +58,7 @@ func listUsers(service user.UseCase) http.Handler {
 	})
 }
 
-func createUser(service user.UseCase) http.Handler {
+func createUser(service user.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error adding user"
 		var input struct {
@@ -107,7 +107,7 @@ func createUser(service user.UseCase) http.Handler {
 	})
 }
 
-func getUser(service user.UseCase) http.Handler {
+func getUser(service user.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error reading user"
 		vars := mux.Vars(r)
@@ -143,7 +143,7 @@ func getUser(service user.UseCase) http.Handler {
 	})
 }
 
-func deleteUser(service user.UseCase) http.Handler {
+func deleteUser(service user.Repository) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error removing user"
 		vars := mux.Vars(r)
@@ -163,7 +163,7 @@ func deleteUser(service user.UseCase) http.Handler {
 }
 
 //MakeUserHandlers make url handlers
-func MakeUserHandlers(r *mux.Router, n negroni.Negroni, service user.UseCase) {
+func MakeUserHandlers(r *mux.Router, n negroni.Negroni, service user.Repository) {
 	r.Handle("/v1/user", n.With(
 		negroni.Wrap(listUsers(service)),
 	)).Methods("GET", "OPTIONS").Name("listUsers")

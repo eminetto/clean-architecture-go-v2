@@ -21,9 +21,3 @@ type Repository interface {
 	Reader
 	Writer
 }
-
-//UseCase use case interface
-type UseCase interface {
-	Reader
-	Writer
-}
