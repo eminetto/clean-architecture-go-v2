@@ -17,7 +17,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func listBooks(service book.UseCase) http.Handler {
+func listBooks(manager book.Manager) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error reading books"
 		var data []*book.Book
@@ -25,9 +25,9 @@ func listBooks(service book.UseCase) http.Handler {
 		title := r.URL.Query().Get("title")
 		switch {
 		case title == "":
-			data, err = service.List()
+			data, err = manager.List()
 		default:
-			data, err = service.Search(title)
+			data, err = manager.Search(title)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		if err != nil && err != domain.ErrNotFound {
@@ -58,7 +58,7 @@ func listBooks(service book.UseCase) http.Handler {
 	})
 }
 
-func createBook(service book.UseCase) http.Handler {
+func createBook(manager book.Manager) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error adding book"
 		var input struct {
@@ -82,7 +82,7 @@ func createBook(service book.UseCase) http.Handler {
 			Quantity:  input.Quantity,
 			CreatedAt: time.Now(),
 		}
-		b.ID, err = service.Create(b)
+		b.ID, err = manager.Create(b)
 		if err != nil {
 			log.Println(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
@@ -107,7 +107,7 @@ func createBook(service book.UseCase) http.Handler {
 	})
 }
 
-func getBook(service book.UseCase) http.Handler {
+func getBook(manager book.Manager) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error reading book"
 		vars := mux.Vars(r)
@@ -117,7 +117,7 @@ func getBook(service book.UseCase) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		data, err := service.Get(id)
+		data, err := manager.Get(id)
 		if err != nil && err != domain.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
@@ -143,7 +143,7 @@ func getBook(service book.UseCase) http.Handler {
 	})
 }
 
-func deleteBook(service book.UseCase) http.Handler {
+func deleteBook(manager book.Manager) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error removing bookmark"
 		vars := mux.Vars(r)
@@ -153,7 +153,7 @@ func deleteBook(service book.UseCase) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		err = service.Delete(id)
+		err = manager.Delete(id)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
@@ -163,20 +163,20 @@ func deleteBook(service book.UseCase) http.Handler {
 }
 
 //MakeBookHandlers make url handlers
-func MakeBookHandlers(r *mux.Router, n negroni.Negroni, service book.UseCase) {
+func MakeBookHandlers(r *mux.Router, n negroni.Negroni, manager book.Manager) {
 	r.Handle("/v1/book", n.With(
-		negroni.Wrap(listBooks(service)),
+		negroni.Wrap(listBooks(manager)),
 	)).Methods("GET", "OPTIONS").Name("listBooks")
 
 	r.Handle("/v1/book", n.With(
-		negroni.Wrap(createBook(service)),
+		negroni.Wrap(createBook(manager)),
 	)).Methods("POST", "OPTIONS").Name("createBook")
 
 	r.Handle("/v1/book/{id}", n.With(
-		negroni.Wrap(getBook(service)),
+		negroni.Wrap(getBook(manager)),
 	)).Methods("GET", "OPTIONS").Name("getBook")
 
 	r.Handle("/v1/book/{id}", n.With(
-		negroni.Wrap(deleteBook(service)),
+		negroni.Wrap(deleteBook(manager)),
 	)).Methods("DELETE", "OPTIONS").Name("deleteBook")
 }

@@ -7,27 +7,26 @@ import (
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
 )
 
-//Service service interface
-type Service struct {
-	uService user.UseCase
-	bService book.UseCase
+type usecase struct {
+	uManager user.Manager
+	bManager book.Manager
 }
 
-//NewService create new use case
-func NewService(u user.UseCase, b book.UseCase) *Service {
-	return &Service{
-		uService: u,
-		bService: b,
+//NewUseCase create new use case
+func NewUseCase(u user.Manager, b book.Manager) *usecase {
+	return &usecase{
+		uManager: u,
+		bManager: b,
 	}
 }
 
 //Borrow borrow a book to an user
-func (s *Service) Borrow(u *user.User, b *book.Book) error {
-	u, err := s.uService.Get(u.ID)
+func (s *usecase) Borrow(u *user.User, b *book.Book) error {
+	u, err := s.uManager.Get(u.ID)
 	if err != nil {
 		return err
 	}
-	b, err = s.bService.Get(b.ID)
+	b, err = s.bManager.Get(b.ID)
 	if err != nil {
 		return err
 	}
@@ -40,12 +39,12 @@ func (s *Service) Borrow(u *user.User, b *book.Book) error {
 		}
 	}
 	u.Books = append(u.Books, b.ID)
-	err = s.uService.Update(u)
+	err = s.uManager.Update(u)
 	if err != nil {
 		return err
 	}
 	b.Quantity--
-	err = s.bService.Update(b)
+	err = s.bManager.Update(b)
 	if err != nil {
 		return err
 	}
@@ -53,13 +52,13 @@ func (s *Service) Borrow(u *user.User, b *book.Book) error {
 }
 
 //Return return a book
-func (s *Service) Return(b *book.Book) error {
-	b, err := s.bService.Get(b.ID)
+func (s *usecase) Return(b *book.Book) error {
+	b, err := s.bManager.Get(b.ID)
 	if err != nil {
 		return err
 	}
 
-	all, err := s.uService.List()
+	all, err := s.uManager.List()
 	if err != nil {
 		return err
 	}
@@ -77,14 +76,14 @@ func (s *Service) Return(b *book.Book) error {
 	if !borrowed {
 		return domain.ErrBookNotBorrowed
 	}
-	u, err := s.uService.Get(borrowedBy)
+	u, err := s.uManager.Get(borrowedBy)
 	if err != nil {
 		return err
 	}
 	for i, j := range u.Books {
 		if j == b.ID {
 			u.Books = append(u.Books[:i], u.Books[i+1:]...)
-			err = s.uService.Update(u)
+			err = s.uManager.Update(u)
 			if err != nil {
 				return err
 			}
@@ -92,7 +91,7 @@ func (s *Service) Return(b *book.Book) error {
 		}
 	}
 	b.Quantity++
-	err = s.bService.Update(b)
+	err = s.bManager.Update(b)
 	if err != nil {
 		return err
 	}

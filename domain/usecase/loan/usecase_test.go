@@ -17,14 +17,14 @@ import (
 func Test_Borrow(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	uMock := umock.NewMockUseCase(controller)
-	bMock := bmock.NewMockUseCase(controller)
-	service := NewService(uMock, bMock)
+	uMock := umock.NewMockManager(controller)
+	bMock := bmock.NewMockManager(controller)
+	uc := NewUseCase(uMock, bMock)
 	t.Run("user not found", func(t *testing.T) {
 		u := user.NewFixtureUser()
 		b := book.NewFixtureBook()
 		uMock.EXPECT().Get(u.ID).Return(nil, domain.ErrNotFound)
-		err := service.Borrow(u, b)
+		err := uc.Borrow(u, b)
 		assert.Equal(t, domain.ErrNotFound, err)
 	})
 	t.Run("book not found", func(t *testing.T) {
@@ -32,7 +32,7 @@ func Test_Borrow(t *testing.T) {
 		b := book.NewFixtureBook()
 		uMock.EXPECT().Get(u.ID).Return(u, nil)
 		bMock.EXPECT().Get(b.ID).Return(nil, domain.ErrNotFound)
-		err := service.Borrow(u, b)
+		err := uc.Borrow(u, b)
 		assert.Equal(t, domain.ErrNotFound, err)
 	})
 	t.Run("not enough books to borrow", func(t *testing.T) {
@@ -41,7 +41,7 @@ func Test_Borrow(t *testing.T) {
 		b.Quantity = 0
 		uMock.EXPECT().Get(u.ID).Return(u, nil)
 		bMock.EXPECT().Get(b.ID).Return(b, nil)
-		err := service.Borrow(u, b)
+		err := uc.Borrow(u, b)
 		assert.Equal(t, domain.ErrNotEnoughBooks, err)
 	})
 	t.Run("book already borrowed", func(t *testing.T) {
@@ -51,7 +51,7 @@ func Test_Borrow(t *testing.T) {
 		b.Quantity = 1
 		uMock.EXPECT().Get(u.ID).Return(u, nil)
 		bMock.EXPECT().Get(b.ID).Return(b, nil)
-		err := service.Borrow(u, b)
+		err := uc.Borrow(u, b)
 		assert.Equal(t, domain.ErrBookAlreadyBorrowed, err)
 	})
 	t.Run("sucess", func(t *testing.T) {
@@ -61,7 +61,7 @@ func Test_Borrow(t *testing.T) {
 		bMock.EXPECT().Get(b.ID).Return(b, nil)
 		uMock.EXPECT().Update(u).Return(nil)
 		bMock.EXPECT().Update(b).Return(nil)
-		err := service.Borrow(u, b)
+		err := uc.Borrow(u, b)
 		assert.Nil(t, err)
 	})
 }
@@ -69,13 +69,13 @@ func Test_Borrow(t *testing.T) {
 func Test_Return(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	uMock := umock.NewMockUseCase(controller)
-	bMock := bmock.NewMockUseCase(controller)
-	service := NewService(uMock, bMock)
+	uMock := umock.NewMockManager(controller)
+	bMock := bmock.NewMockManager(controller)
+	uc := NewUseCase(uMock, bMock)
 	t.Run("book not found", func(t *testing.T) {
 		b := book.NewFixtureBook()
 		bMock.EXPECT().Get(b.ID).Return(nil, domain.ErrNotFound)
-		err := service.Return(b)
+		err := uc.Return(b)
 		assert.Equal(t, domain.ErrNotFound, err)
 	})
 	t.Run("book not borrowed", func(t *testing.T) {
@@ -83,7 +83,7 @@ func Test_Return(t *testing.T) {
 		b := book.NewFixtureBook()
 		bMock.EXPECT().Get(b.ID).Return(b, nil)
 		uMock.EXPECT().List().Return([]*user.User{u}, nil)
-		err := service.Return(b)
+		err := uc.Return(b)
 		assert.Equal(t, domain.ErrBookNotBorrowed, err)
 	})
 	t.Run("success", func(t *testing.T) {
@@ -95,7 +95,7 @@ func Test_Return(t *testing.T) {
 		uMock.EXPECT().List().Return([]*user.User{u}, nil)
 		uMock.EXPECT().Update(u).Return(nil)
 		bMock.EXPECT().Update(b).Return(nil)
-		err := service.Return(b)
+		err := uc.Return(b)
 		assert.Nil(t, err)
 	})
 }

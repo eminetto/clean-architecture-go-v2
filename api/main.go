@@ -11,7 +11,7 @@ import (
 
 	"github.com/eminetto/clean-architecture-go-v2/pkg/password"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/loan"
+	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/loan"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
 
@@ -37,13 +37,13 @@ func main() {
 	}
 	defer db.Close()
 
-	bookRepo := book.NewMySQLRepoRepository(db)
-	bookService := book.NewService(bookRepo)
+	bookRepo := book.NewMySQLRepository(db)
+	bookManager := book.NewManager(bookRepo)
 
 	userRepo := user.NewMySQLRepoRepository(db)
-	userService := user.NewService(userRepo, password.NewService())
+	userManager := user.NewManager(userRepo, password.NewService())
 
-	loanService := loan.NewService(userService, bookService)
+	loanUseCase := loan.NewUseCase(userManager, bookManager)
 
 	metricService, err := metric.NewPrometheusService()
 	if err != nil {
@@ -57,13 +57,13 @@ func main() {
 		negroni.NewLogger(),
 	)
 	//book
-	handler.MakeBookHandlers(r, *n, bookService)
+	handler.MakeBookHandlers(r, *n, bookManager)
 
 	//user
-	handler.MakeUserHandlers(r, *n, userService)
+	handler.MakeUserHandlers(r, *n, userManager)
 
 	//loan
-	handler.MakeLoanHandlers(r, *n, bookService, userService, loanService)
+	handler.MakeLoanHandlers(r, *n, bookManager, userManager, loanUseCase)
 
 	http.Handle("/", r)
 	http.Handle("/metrics", promhttp.Handler())
