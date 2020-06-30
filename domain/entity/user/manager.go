@@ -11,22 +11,22 @@ import (
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 )
 
-//repository service interface
-type repository struct {
+//manager  interface
+type manager struct {
 	repo Repository
 	pwd  password.UseCase
 }
 
-//NewRepository create new repository
-func NewRepository(r Repository, pwd password.UseCase) *repository {
-	return &repository{
+//NewManager create new repository
+func NewManager(r Repository, pwd password.UseCase) *manager {
+	return &manager{
 		repo: r,
 		pwd:  pwd,
 	}
 }
 
 //Create an user
-func (s *repository) Create(e *User) (entity.ID, error) {
+func (s *manager) Create(e *User) (entity.ID, error) {
 	e.ID = entity.NewID()
 	e.CreatedAt = time.Now()
 	pwd, err := s.pwd.Generate(e.Password)
@@ -38,22 +38,22 @@ func (s *repository) Create(e *User) (entity.ID, error) {
 }
 
 //Get an user
-func (s *repository) Get(id entity.ID) (*User, error) {
+func (s *manager) Get(id entity.ID) (*User, error) {
 	return s.repo.Get(id)
 }
 
 //Search users
-func (s *repository) Search(query string) ([]*User, error) {
+func (s *manager) Search(query string) ([]*User, error) {
 	return s.repo.Search(strings.ToLower(query))
 }
 
 //List users
-func (s *repository) List() ([]*User, error) {
+func (s *manager) List() ([]*User, error) {
 	return s.repo.List()
 }
 
 //Delete an user
-func (s *repository) Delete(id entity.ID) error {
+func (s *manager) Delete(id entity.ID) error {
 	u, err := s.Get(id)
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func (s *repository) Delete(id entity.ID) error {
 }
 
 //Update an user
-func (s *repository) Update(e *User) error {
+func (s *manager) Update(e *User) error {
 	e.UpdatedAt = time.Now()
 	return s.repo.Update(e)
 }

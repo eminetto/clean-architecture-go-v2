@@ -23,18 +23,18 @@ import (
 func Test_listBooks(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	service := mock.NewMockUseCase(controller)
+	manager := mock.NewMockManager(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeBookHandlers(r, *n, service)
+	MakeBookHandlers(r, *n, manager)
 	path, err := r.GetRoute("listBooks").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book", path)
 	b := book.NewFixtureBook()
-	service.EXPECT().
+	manager.EXPECT().
 		List().
 		Return([]*book.Book{b}, nil)
-	ts := httptest.NewServer(listBooks(service))
+	ts := httptest.NewServer(listBooks(manager))
 	defer ts.Close()
 	res, err := http.Get(ts.URL)
 	assert.Nil(t, err)
@@ -44,10 +44,10 @@ func Test_listBooks(t *testing.T) {
 func Test_listBooks_NotFound(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	service := mock.NewMockUseCase(controller)
-	ts := httptest.NewServer(listBooks(service))
+	manager := mock.NewMockManager(controller)
+	ts := httptest.NewServer(listBooks(manager))
 	defer ts.Close()
-	service.EXPECT().
+	manager.EXPECT().
 		Search("book of books").
 		Return(nil, domain.ErrNotFound)
 	res, err := http.Get(ts.URL + "?title=book+of+books")
@@ -58,12 +58,12 @@ func Test_listBooks_NotFound(t *testing.T) {
 func Test_listBooks_Search(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	service := mock.NewMockUseCase(controller)
+	manager := mock.NewMockManager(controller)
 	b := book.NewFixtureBook()
-	service.EXPECT().
+	manager.EXPECT().
 		Search("ozzy").
 		Return([]*book.Book{b}, nil)
-	ts := httptest.NewServer(listBooks(service))
+	ts := httptest.NewServer(listBooks(manager))
 	defer ts.Close()
 	res, err := http.Get(ts.URL + "?title=ozzy")
 	assert.Nil(t, err)
@@ -73,18 +73,18 @@ func Test_listBooks_Search(t *testing.T) {
 func Test_createBook(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	service := mock.NewMockUseCase(controller)
+	manager := mock.NewMockManager(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeBookHandlers(r, *n, service)
+	MakeBookHandlers(r, *n, manager)
 	path, err := r.GetRoute("createBook").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book", path)
 
-	service.EXPECT().
+	manager.EXPECT().
 		Create(gomock.Any()).
 		Return(entity.NewID(), nil)
-	h := createBook(service)
+	h := createBook(manager)
 
 	ts := httptest.NewServer(h)
 	defer ts.Close()
@@ -105,18 +105,18 @@ func Test_createBook(t *testing.T) {
 func Test_getBook(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	service := mock.NewMockUseCase(controller)
+	manager := mock.NewMockManager(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeBookHandlers(r, *n, service)
+	MakeBookHandlers(r, *n, manager)
 	path, err := r.GetRoute("getBook").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book/{id}", path)
 	b := book.NewFixtureBook()
-	service.EXPECT().
+	manager.EXPECT().
 		Get(b.ID).
 		Return(b, nil)
-	handler := getBook(service)
+	handler := getBook(manager)
 	r.Handle("/v1/book/{id}", handler)
 	ts := httptest.NewServer(r)
 	defer ts.Close()
@@ -132,16 +132,16 @@ func Test_getBook(t *testing.T) {
 func Test_deleteBook(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	service := mock.NewMockUseCase(controller)
+	manager := mock.NewMockManager(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeBookHandlers(r, *n, service)
+	MakeBookHandlers(r, *n, manager)
 	path, err := r.GetRoute("deleteBook").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book/{id}", path)
 	b := book.NewFixtureBook()
-	service.EXPECT().Delete(b.ID).Return(nil)
-	handler := deleteBook(service)
+	manager.EXPECT().Delete(b.ID).Return(nil)
+	handler := deleteBook(manager)
 	req, _ := http.NewRequest("DELETE", "/v1/bookmark/"+b.ID.String(), nil)
 	r.Handle("/v1/bookmark/{id}", handler).Methods("DELETE", "OPTIONS")
 	rr := httptest.NewRecorder()

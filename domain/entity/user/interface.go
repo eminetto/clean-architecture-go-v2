@@ -21,3 +21,8 @@ type Repository interface {
 	Reader
 	Writer
 }
+
+//Manager interface
+type Manager interface {
+	Repository
+}

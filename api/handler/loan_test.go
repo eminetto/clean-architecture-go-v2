@@ -25,8 +25,8 @@ import (
 func Test_borrowBook(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	uMock := umock.NewMockUseCase(controller)
-	bMock := bmock.NewMockUseCase(controller)
+	uMock := umock.NewMockManager(controller)
+	bMock := bmock.NewMockManager(controller)
 	lMock := lmock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
@@ -74,8 +74,8 @@ func Test_borrowBook(t *testing.T) {
 func Test_returnBook(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	uMock := umock.NewMockUseCase(controller)
-	bMock := bmock.NewMockUseCase(controller)
+	uMock := umock.NewMockManager(controller)
+	bMock := bmock.NewMockManager(controller)
 	lMock := lmock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()

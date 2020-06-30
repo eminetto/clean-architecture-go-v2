@@ -13,7 +13,7 @@ type usecase struct {
 }
 
 //NewUseCase create new use case
-func NewUseCase(u user.Repository, b book.Repository) *usecase {
+func NewUseCase(u user.Manager, b book.Manager) *usecase {
 	return &usecase{
 		uService: u,
 		bService: b,

@@ -14,8 +14,8 @@ type mySQLRepo struct {
 	db *sql.DB
 }
 
-//NewMySQLRepoRepository create new repository
-func NewMySQLRepoRepository(db *sql.DB) *mySQLRepo {
+//NewMySQLRepository create new repository
+func NewMySQLRepository(db *sql.DB) *mySQLRepo {
 	return &mySQLRepo{
 		db: db,
 	}

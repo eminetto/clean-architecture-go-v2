@@ -22,18 +22,18 @@ import (
 func Test_listUsers(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	service := mock.NewMockUseCase(controller)
+	m := mock.NewMockManager(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeUserHandlers(r, *n, service)
+	MakeUserHandlers(r, *n, m)
 	path, err := r.GetRoute("listUsers").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/user", path)
 	u := user.NewFixtureUser()
-	service.EXPECT().
+	m.EXPECT().
 		List().
 		Return([]*user.User{u}, nil)
-	ts := httptest.NewServer(listUsers(service))
+	ts := httptest.NewServer(listUsers(m))
 	defer ts.Close()
 	res, err := http.Get(ts.URL)
 	assert.Nil(t, err)
@@ -43,10 +43,10 @@ func Test_listUsers(t *testing.T) {
 func Test_listUsers_NotFound(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	service := mock.NewMockUseCase(controller)
-	ts := httptest.NewServer(listUsers(service))
+	m := mock.NewMockManager(controller)
+	ts := httptest.NewServer(listUsers(m))
 	defer ts.Close()
-	service.EXPECT().
+	m.EXPECT().
 		Search("dio").
 		Return(nil, domain.ErrNotFound)
 	res, err := http.Get(ts.URL + "?name=dio")
@@ -57,12 +57,12 @@ func Test_listUsers_NotFound(t *testing.T) {
 func Test_listUsers_Search(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	service := mock.NewMockUseCase(controller)
+	m := mock.NewMockManager(controller)
 	u := user.NewFixtureUser()
-	service.EXPECT().
+	m.EXPECT().
 		Search("ozzy").
 		Return([]*user.User{u}, nil)
-	ts := httptest.NewServer(listUsers(service))
+	ts := httptest.NewServer(listUsers(m))
 	defer ts.Close()
 	res, err := http.Get(ts.URL + "?name=ozzy")
 	assert.Nil(t, err)
@@ -72,18 +72,18 @@ func Test_listUsers_Search(t *testing.T) {
 func Test_createUser(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	service := mock.NewMockUseCase(controller)
+	m := mock.NewMockManager(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeUserHandlers(r, *n, service)
+	MakeUserHandlers(r, *n, m)
 	path, err := r.GetRoute("createUser").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/user", path)
 
-	service.EXPECT().
+	m.EXPECT().
 		Create(gomock.Any()).
 		Return(entity.NewID(), nil)
-	h := createUser(service)
+	h := createUser(m)
 
 	ts := httptest.NewServer(h)
 	defer ts.Close()
@@ -105,18 +105,18 @@ func Test_createUser(t *testing.T) {
 func Test_getUser(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	service := mock.NewMockUseCase(controller)
+	m := mock.NewMockManager(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeUserHandlers(r, *n, service)
+	MakeUserHandlers(r, *n, m)
 	path, err := r.GetRoute("getUser").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/user/{id}", path)
 	u := user.NewFixtureUser()
-	service.EXPECT().
+	m.EXPECT().
 		Get(u.ID).
 		Return(u, nil)
-	handler := getUser(service)
+	handler := getUser(m)
 	r.Handle("/v1/user/{id}", handler)
 	ts := httptest.NewServer(r)
 	defer ts.Close()
@@ -132,16 +132,16 @@ func Test_getUser(t *testing.T) {
 func Test_deleteUser(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	service := mock.NewMockUseCase(controller)
+	m := mock.NewMockManager(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeUserHandlers(r, *n, service)
+	MakeUserHandlers(r, *n, m)
 	path, err := r.GetRoute("deleteUser").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/user/{id}", path)
 	u := user.NewFixtureUser()
-	service.EXPECT().Delete(u.ID).Return(nil)
-	handler := deleteUser(service)
+	m.EXPECT().Delete(u.ID).Return(nil)
+	handler := deleteUser(m)
 	req, _ := http.NewRequest("DELETE", "/v1/user/"+u.ID.String(), nil)
 	r.Handle("/v1/user/{id}", handler).Methods("DELETE", "OPTIONS")
 	rr := httptest.NewRecorder()

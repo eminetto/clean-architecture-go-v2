@@ -17,8 +17,8 @@ import (
 func Test_Borrow(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	uMock := umock.NewMockUseCase(controller)
-	bMock := bmock.NewMockUseCase(controller)
+	uMock := umock.NewMockManager(controller)
+	bMock := bmock.NewMockManager(controller)
 	service := NewUseCase(uMock, bMock)
 	t.Run("user not found", func(t *testing.T) {
 		u := user.NewFixtureUser()
@@ -69,8 +69,8 @@ func Test_Borrow(t *testing.T) {
 func Test_Return(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	uMock := umock.NewMockUseCase(controller)
-	bMock := bmock.NewMockUseCase(controller)
+	uMock := umock.NewMockManager(controller)
+	bMock := bmock.NewMockManager(controller)
 	service := NewUseCase(uMock, bMock)
 	t.Run("book not found", func(t *testing.T) {
 		b := book.NewFixtureBook()
