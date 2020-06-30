@@ -16,13 +16,13 @@ type Writer interface {
 	Delete(id entity.ID) error
 }
 
-//Repository repository interface
-type Repository interface {
+//repository interface
+type repository interface {
 	Reader
 	Writer
 }
 
 //Manager interface
 type Manager interface {
-	Repository
+	repository
 }

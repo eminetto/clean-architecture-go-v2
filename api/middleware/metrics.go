@@ -10,7 +10,7 @@ import (
 )
 
 //Metrics to prometheus
-func Metrics(mService metric.UseCase) negroni.HandlerFunc {
+func Metrics(mService metric.Service) negroni.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 		appMetric := metric.NewHTTP(r.URL.Path, r.Method)
 		appMetric.Started()

@@ -6,14 +6,14 @@ import (
 	"github.com/prometheus/client_golang/prometheus/push"
 )
 
-//Service implements UseCase interface
-type Service struct {
+//service implements Service interface
+type service struct {
 	pHistogram           *prometheus.HistogramVec
 	httpRequestHistogram *prometheus.HistogramVec
 }
 
 //NewPrometheusService create a new prometheus service
-func NewPrometheusService() (*Service, error) {
+func NewPrometheusService() (*service, error) {
 	cli := prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Namespace: "pushgateway",
 		Name:      "cmd_duration_seconds",
@@ -27,7 +27,7 @@ func NewPrometheusService() (*Service, error) {
 		Buckets:   prometheus.DefBuckets,
 	}, []string{"handler", "method", "code"})
 
-	s := &Service{
+	s := &service{
 		pHistogram:           cli,
 		httpRequestHistogram: http,
 	}
@@ -43,13 +43,13 @@ func NewPrometheusService() (*Service, error) {
 }
 
 //SaveCLI send metrics to server
-func (s *Service) SaveCLI(c *CLI) error {
+func (s *service) SaveCLI(c *CLI) error {
 	gatewayURL := config.PROMETHEUS_PUSHGATEWAY
 	s.pHistogram.WithLabelValues(c.Name).Observe(c.Duration)
 	return push.New(gatewayURL, "cmd_job").Collector(s.pHistogram).Push()
 }
 
 //SaveHTTP send metrics to server
-func (s *Service) SaveHTTP(h *HTTP) {
+func (s *service) SaveHTTP(h *HTTP) {
 	s.httpRequestHistogram.WithLabelValues(h.Handler, h.Method, h.StatusCode).Observe(h.Duration)
 }

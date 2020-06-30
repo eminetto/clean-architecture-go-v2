@@ -13,12 +13,12 @@ import (
 
 //manager  interface
 type manager struct {
-	repo Repository
-	pwd  password.UseCase
+	repo repository
+	pwd  password.Service
 }
 
 //NewManager create new repository
-func NewManager(r Repository, pwd password.UseCase) *manager {
+func NewManager(r repository, pwd password.Service) *manager {
 	return &manager{
 		repo: r,
 		pwd:  pwd,

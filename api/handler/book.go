@@ -163,20 +163,20 @@ func deleteBook(manager book.Manager) http.Handler {
 }
 
 //MakeBookHandlers make url handlers
-func MakeBookHandlers(r *mux.Router, n negroni.Negroni, service book.Manager) {
+func MakeBookHandlers(r *mux.Router, n negroni.Negroni, manager book.Manager) {
 	r.Handle("/v1/book", n.With(
-		negroni.Wrap(listBooks(service)),
+		negroni.Wrap(listBooks(manager)),
 	)).Methods("GET", "OPTIONS").Name("listBooks")
 
 	r.Handle("/v1/book", n.With(
-		negroni.Wrap(createBook(service)),
+		negroni.Wrap(createBook(manager)),
 	)).Methods("POST", "OPTIONS").Name("createBook")
 
 	r.Handle("/v1/book/{id}", n.With(
-		negroni.Wrap(getBook(service)),
+		negroni.Wrap(getBook(manager)),
 	)).Methods("GET", "OPTIONS").Name("getBook")
 
 	r.Handle("/v1/book/{id}", n.With(
-		negroni.Wrap(deleteBook(service)),
+		negroni.Wrap(deleteBook(manager)),
 	)).Methods("DELETE", "OPTIONS").Name("deleteBook")
 }

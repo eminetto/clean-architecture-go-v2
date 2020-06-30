@@ -8,11 +8,11 @@ import (
 )
 
 type manager struct {
-	repo Repository
+	repo repository
 }
 
 //NewManager create new manager
-func NewManager(r Repository) *manager {
+func NewManager(r repository) *manager {
 	return &manager{
 		repo: r,
 	}

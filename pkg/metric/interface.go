@@ -57,8 +57,8 @@ func (h *HTTP) Finished() {
 	h.Duration = time.Since(h.StartedAt).Seconds()
 }
 
-//UseCase definition
-type UseCase interface {
+//Service definition
+type Service interface {
 	SaveCLI(c *CLI) error
 	SaveHTTP(h *HTTP)
 }
