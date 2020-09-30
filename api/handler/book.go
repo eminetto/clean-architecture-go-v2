@@ -6,28 +6,28 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
+
 	"github.com/eminetto/clean-architecture-go-v2/domain"
 
 	"github.com/eminetto/clean-architecture-go-v2/api/presenter"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity/book"
-
 	"github.com/codegangsta/negroni"
+	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 	"github.com/gorilla/mux"
 )
 
-func listBooks(manager book.Manager) http.Handler {
+func listBooks(service book.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error reading books"
-		var data []*book.Book
+		var data []*entity.Book
 		var err error
 		title := r.URL.Query().Get("title")
 		switch {
 		case title == "":
-			data, err = manager.List()
+			data, err = service.ListBooks()
 		default:
-			data, err = manager.Search(title)
+			data, err = service.SearchBooks(title)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		if err != nil && err != domain.ErrNotFound {
@@ -58,7 +58,7 @@ func listBooks(manager book.Manager) http.Handler {
 	})
 }
 
-func createBook(manager book.Manager) http.Handler {
+func createBook(service book.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error adding book"
 		var input struct {
@@ -74,7 +74,7 @@ func createBook(manager book.Manager) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		b := &book.Book{
+		b := &entity.Book{
 			ID:        entity.NewID(),
 			Title:     input.Title,
 			Author:    input.Author,
@@ -82,7 +82,7 @@ func createBook(manager book.Manager) http.Handler {
 			Quantity:  input.Quantity,
 			CreatedAt: time.Now(),
 		}
-		b.ID, err = manager.Create(b)
+		b.ID, err = service.CreateBook(b)
 		if err != nil {
 			log.Println(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
@@ -107,7 +107,7 @@ func createBook(manager book.Manager) http.Handler {
 	})
 }
 
-func getBook(manager book.Manager) http.Handler {
+func getBook(service book.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error reading book"
 		vars := mux.Vars(r)
@@ -117,7 +117,7 @@ func getBook(manager book.Manager) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		data, err := manager.Get(id)
+		data, err := service.GetBook(id)
 		if err != nil && err != domain.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
@@ -143,7 +143,7 @@ func getBook(manager book.Manager) http.Handler {
 	})
 }
 
-func deleteBook(manager book.Manager) http.Handler {
+func deleteBook(service book.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error removing bookmark"
 		vars := mux.Vars(r)
@@ -153,7 +153,7 @@ func deleteBook(manager book.Manager) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		err = manager.Delete(id)
+		err = service.DeleteBook(id)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
@@ -163,20 +163,20 @@ func deleteBook(manager book.Manager) http.Handler {
 }
 
 //MakeBookHandlers make url handlers
-func MakeBookHandlers(r *mux.Router, n negroni.Negroni, manager book.Manager) {
+func MakeBookHandlers(r *mux.Router, n negroni.Negroni, service book.UseCase) {
 	r.Handle("/v1/book", n.With(
-		negroni.Wrap(listBooks(manager)),
+		negroni.Wrap(listBooks(service)),
 	)).Methods("GET", "OPTIONS").Name("listBooks")
 
 	r.Handle("/v1/book", n.With(
-		negroni.Wrap(createBook(manager)),
+		negroni.Wrap(createBook(service)),
 	)).Methods("POST", "OPTIONS").Name("createBook")
 
 	r.Handle("/v1/book/{id}", n.With(
-		negroni.Wrap(getBook(manager)),
+		negroni.Wrap(getBook(service)),
 	)).Methods("GET", "OPTIONS").Name("getBook")
 
 	r.Handle("/v1/book/{id}", n.With(
-		negroni.Wrap(deleteBook(manager)),
+		negroni.Wrap(deleteBook(service)),
 	)).Methods("DELETE", "OPTIONS").Name("deleteBook")
 }

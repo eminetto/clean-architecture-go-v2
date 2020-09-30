@@ -4,20 +4,19 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
+	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
+	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/user"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/loan"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity/book"
-
 	"github.com/codegangsta/negroni"
+	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 	"github.com/gorilla/mux"
 )
 
-func borrowBook(bManager book.Manager, uManager user.Manager, loanUseCase loan.UseCase) http.Handler {
+func borrowBook(bookService book.UseCase, userService user.UseCase, loanService loan.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error borrowing book"
 		vars := mux.Vars(r)
@@ -27,7 +26,7 @@ func borrowBook(bManager book.Manager, uManager user.Manager, loanUseCase loan.U
 			w.Write([]byte(errorMessage))
 			return
 		}
-		b, err := bManager.Get(bID)
+		b, err := bookService.GetBook(bID)
 		if err != nil && err != domain.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
@@ -44,7 +43,7 @@ func borrowBook(bManager book.Manager, uManager user.Manager, loanUseCase loan.U
 			w.Write([]byte(errorMessage))
 			return
 		}
-		u, err := uManager.Get(uID)
+		u, err := userService.GetUser(uID)
 		if err != nil && err != domain.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
@@ -55,7 +54,7 @@ func borrowBook(bManager book.Manager, uManager user.Manager, loanUseCase loan.U
 			w.Write([]byte(errorMessage))
 			return
 		}
-		err = loanUseCase.Borrow(u, b)
+		err = loanService.Borrow(u, b)
 		if err != nil {
 			fmt.Println(err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -66,7 +65,7 @@ func borrowBook(bManager book.Manager, uManager user.Manager, loanUseCase loan.U
 	})
 }
 
-func returnBook(bManager book.Manager, loanUseCase loan.UseCase) http.Handler {
+func returnBook(bookService book.UseCase, loanService loan.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error returning book"
 		vars := mux.Vars(r)
@@ -76,7 +75,7 @@ func returnBook(bManager book.Manager, loanUseCase loan.UseCase) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		b, err := bManager.Get(bID)
+		b, err := bookService.GetBook(bID)
 		if err != nil && err != domain.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
@@ -87,7 +86,7 @@ func returnBook(bManager book.Manager, loanUseCase loan.UseCase) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		err = loanUseCase.Return(b)
+		err = loanService.Return(b)
 		if err != nil && err != domain.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
@@ -98,12 +97,12 @@ func returnBook(bManager book.Manager, loanUseCase loan.UseCase) http.Handler {
 }
 
 //MakeLoanHandlers make url handlers
-func MakeLoanHandlers(r *mux.Router, n negroni.Negroni, bManager book.Manager, uManager user.Manager, loanUseCase loan.UseCase) {
+func MakeLoanHandlers(r *mux.Router, n negroni.Negroni, bookService book.UseCase, userService user.UseCase, loanService loan.UseCase) {
 	r.Handle("/v1/loan/borrow/{book_id}/{user_id}", n.With(
-		negroni.Wrap(borrowBook(bManager, uManager, loanUseCase)),
+		negroni.Wrap(borrowBook(bookService, userService, loanService)),
 	)).Methods("GET", "OPTIONS").Name("borrowBook")
 
 	r.Handle("/v1/loan/return/{book_id}", n.With(
-		negroni.Wrap(returnBook(bManager, loanUseCase)),
+		negroni.Wrap(returnBook(bookService, loanService)),
 	)).Methods("GET", "OPTIONS").Name("returnBook")
 }

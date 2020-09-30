@@ -3,6 +3,8 @@ package user
 import (
 	"testing"
 
+	"github.com/eminetto/clean-architecture-go-v2/domain/repository/user"
+
 	"github.com/eminetto/clean-architecture-go-v2/pkg/password"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain"
@@ -12,10 +14,10 @@ import (
 )
 
 func Test_Create(t *testing.T) {
-	repo := NewInmemRepository()
-	m := NewManager(repo, password.NewFakeService())
-	u := NewFixtureUser()
-	id, err := m.Create(u)
+	repo := user.NewInmemRepository()
+	m := NewService(repo, password.NewFakeService())
+	u := entity.NewFixtureUser()
+	id, err := m.CreateUser(u)
 	assert.Nil(t, err)
 	assert.Equal(t, u.ID, id)
 	assert.False(t, u.CreatedAt.IsZero())
@@ -23,49 +25,49 @@ func Test_Create(t *testing.T) {
 }
 
 func Test_SearchAndFind(t *testing.T) {
-	repo := NewInmemRepository()
-	m := NewManager(repo, password.NewFakeService())
-	u1 := NewFixtureUser()
-	u2 := NewFixtureUser()
+	repo := user.NewInmemRepository()
+	m := NewService(repo, password.NewFakeService())
+	u1 := entity.NewFixtureUser()
+	u2 := entity.NewFixtureUser()
 	u2.FirstName = "Lemmy"
 
-	uID, _ := m.Create(u1)
-	_, _ = m.Create(u2)
+	uID, _ := m.CreateUser(u1)
+	_, _ = m.CreateUser(u2)
 
 	t.Run("search", func(t *testing.T) {
-		c, err := m.Search("ozzy")
+		c, err := m.SearchUsers("ozzy")
 		assert.Nil(t, err)
 		assert.Equal(t, 1, len(c))
 		assert.Equal(t, "Osbourne", c[0].LastName)
 
-		c, err = m.Search("dio")
+		c, err = m.SearchUsers("dio")
 		assert.Equal(t, domain.ErrNotFound, err)
 		assert.Nil(t, c)
 	})
 	t.Run("list all", func(t *testing.T) {
-		all, err := m.List()
+		all, err := m.ListUsers()
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(all))
 	})
 
 	t.Run("get", func(t *testing.T) {
-		saved, err := m.Get(uID)
+		saved, err := m.GetUser(uID)
 		assert.Nil(t, err)
 		assert.Equal(t, u1.FirstName, saved.FirstName)
 	})
 }
 
 func Test_Update(t *testing.T) {
-	repo := NewInmemRepository()
-	m := NewManager(repo, password.NewFakeService())
-	u := NewFixtureUser()
-	id, err := m.Create(u)
+	repo := user.NewInmemRepository()
+	m := NewService(repo, password.NewFakeService())
+	u := entity.NewFixtureUser()
+	id, err := m.CreateUser(u)
 	assert.Nil(t, err)
-	saved, _ := m.Get(id)
+	saved, _ := m.GetUser(id)
 	saved.FirstName = "Dio"
 	saved.Books = append(saved.Books, entity.NewID())
-	assert.Nil(t, m.Update(saved))
-	updated, err := m.Get(id)
+	assert.Nil(t, m.UpdateUser(saved))
+	updated, err := m.GetUser(id)
 	assert.Nil(t, err)
 	assert.Equal(t, "Dio", updated.FirstName)
 	assert.False(t, u.UpdatedAt.IsZero())
@@ -73,23 +75,23 @@ func Test_Update(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	repo := NewInmemRepository()
-	m := NewManager(repo, password.NewFakeService())
-	u1 := NewFixtureUser()
-	u2 := NewFixtureUser()
-	u2ID, _ := m.Create(u2)
+	repo := user.NewInmemRepository()
+	m := NewService(repo, password.NewFakeService())
+	u1 := entity.NewFixtureUser()
+	u2 := entity.NewFixtureUser()
+	u2ID, _ := m.CreateUser(u2)
 
-	err := m.Delete(u1.ID)
+	err := m.DeleteUser(u1.ID)
 	assert.Equal(t, domain.ErrNotFound, err)
 
-	err = m.Delete(u2ID)
+	err = m.DeleteUser(u2ID)
 	assert.Nil(t, err)
-	_, err = m.Get(u2ID)
+	_, err = m.GetUser(u2ID)
 	assert.Equal(t, domain.ErrNotFound, err)
 
-	u3 := NewFixtureUser()
+	u3 := entity.NewFixtureUser()
 	u3.Books = []entity.ID{entity.NewID()}
-	_, _ = m.Create(u3)
-	err = m.Delete(u3.ID)
+	_, _ = m.CreateUser(u3)
+	err = m.DeleteUser(u3.ID)
 	assert.Equal(t, domain.ErrCannotBeDeleted, err)
 }

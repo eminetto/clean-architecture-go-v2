@@ -1,14 +1,12 @@
-package user
+package entity
 
 import (
 	"time"
-
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 )
 
 func NewFixtureUser() *User {
 	return &User{
-		ID:        entity.NewID(),
+		ID:        NewID(),
 		Email:     "ozzy@metalgods.net",
 		Password:  "123456",
 		FirstName: "Ozzy",

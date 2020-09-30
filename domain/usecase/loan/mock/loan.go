@@ -5,10 +5,10 @@
 package mock
 
 import (
-	book "github.com/eminetto/clean-architecture-go-v2/domain/entity/book"
-	user "github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+
+	entity "github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockUseCase is a mock of UseCase interface
@@ -35,7 +35,7 @@ func (m *MockUseCase) EXPECT() *MockUseCaseMockRecorder {
 }
 
 // Borrow mocks base method
-func (m *MockUseCase) Borrow(u *user.User, b *book.Book) error {
+func (m *MockUseCase) Borrow(u *entity.User, b *entity.Book) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Borrow", u, b)
 	ret0, _ := ret[0].(error)
@@ -49,7 +49,7 @@ func (mr *MockUseCaseMockRecorder) Borrow(u, b interface{}) *gomock.Call {
 }
 
 // Return mocks base method
-func (m *MockUseCase) Return(b *book.Book) error {
+func (m *MockUseCase) Return(b *entity.Book) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Return", b)
 	ret0, _ := ret[0].(error)

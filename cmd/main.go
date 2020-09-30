@@ -7,10 +7,11 @@ import (
 	"log"
 	"os"
 
+	repo "github.com/eminetto/clean-architecture-go-v2/domain/repository/book"
+	book "github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
+
 	"github.com/eminetto/clean-architecture-go-v2/config"
 	_ "github.com/go-sql-driver/mysql"
-
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity/book"
 
 	"github.com/eminetto/clean-architecture-go-v2/pkg/metric"
 )
@@ -40,9 +41,9 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	defer db.Close()
-	repo := book.NewMySQLRepository(db)
-	manager := book.NewManager(repo)
-	all, err := manager.Search(query)
+	repo := repo.NewMySQLRepository(db)
+	manager := book.NewService(repo)
+	all, err := manager.SearchBooks(query)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -2,9 +2,8 @@ package user
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
-
-	"github.com/eminetto/clean-architecture-go-v2/domain"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 )
@@ -22,7 +21,7 @@ func NewMySQLRepoRepository(db *sql.DB) *MySQLRepo {
 }
 
 //Create an user
-func (r *MySQLRepo) Create(e *User) (entity.ID, error) {
+func (r *MySQLRepo) Create(e *entity.User) (entity.ID, error) {
 	stmt, err := r.db.Prepare(`
 		insert into user (id, email, password, first_name, last_name, created_at) 
 		values(?,?,?,?,?,?)`)
@@ -48,16 +47,16 @@ func (r *MySQLRepo) Create(e *User) (entity.ID, error) {
 }
 
 //Get an user
-func (r *MySQLRepo) Get(id entity.ID) (*User, error) {
+func (r *MySQLRepo) Get(id entity.ID) (*entity.User, error) {
 	return getUser(id, r.db)
 }
 
-func getUser(id entity.ID, db *sql.DB) (*User, error) {
+func getUser(id entity.ID, db *sql.DB) (*entity.User, error) {
 	stmt, err := db.Prepare(`select id, email, first_name, last_name, created_at from user where id = ?`)
 	if err != nil {
 		return nil, err
 	}
-	var u User
+	var u entity.User
 	rows, err := stmt.Query(id)
 	if err != nil {
 		return nil, err
@@ -82,7 +81,7 @@ func getUser(id entity.ID, db *sql.DB) (*User, error) {
 }
 
 //Update an user
-func (r *MySQLRepo) Update(e *User) error {
+func (r *MySQLRepo) Update(e *entity.User) error {
 	e.UpdatedAt = time.Now()
 	_, err := r.db.Exec("update user set email = ?, password = ?, first_name = ?, last_name = ?, updated_at = ? where id = ?", e.Email, e.Password, e.FirstName, e.LastName, e.UpdatedAt.Format("2006-01-02"), e.ID)
 	if err != nil {
@@ -102,7 +101,7 @@ func (r *MySQLRepo) Update(e *User) error {
 }
 
 //Search users
-func (r *MySQLRepo) Search(query string) ([]*User, error) {
+func (r *MySQLRepo) Search(query string) ([]*entity.User, error) {
 	stmt, err := r.db.Prepare(`select id from user where name like ?`)
 	if err != nil {
 		return nil, err
@@ -122,9 +121,9 @@ func (r *MySQLRepo) Search(query string) ([]*User, error) {
 		ids = append(ids, i)
 	}
 	if len(ids) == 0 {
-		return nil, domain.ErrNotFound
+		return nil, fmt.Errorf("not found")
 	}
-	var users []*User
+	var users []*entity.User
 	for _, id := range ids {
 		u, err := getUser(id, r.db)
 		if err != nil {
@@ -136,7 +135,7 @@ func (r *MySQLRepo) Search(query string) ([]*User, error) {
 }
 
 //List users
-func (r *MySQLRepo) List() ([]*User, error) {
+func (r *MySQLRepo) List() ([]*entity.User, error) {
 	stmt, err := r.db.Prepare(`select id from user`)
 	if err != nil {
 		return nil, err
@@ -156,9 +155,9 @@ func (r *MySQLRepo) List() ([]*User, error) {
 		ids = append(ids, i)
 	}
 	if len(ids) == 0 {
-		return nil, domain.ErrNotFound
+		return nil, fmt.Errorf("not found")
 	}
-	var users []*User
+	var users []*entity.User
 	for _, id := range ids {
 		u, err := getUser(id, r.db)
 		if err != nil {

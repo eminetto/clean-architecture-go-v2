@@ -1,12 +1,11 @@
 package loan
 
 import (
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity/book"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
+	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 )
 
 //UseCase use case interface
 type UseCase interface {
-	Borrow(u *user.User, b *book.Book) error
-	Return(b *book.Book) error
+	Borrow(u *entity.User, b *entity.Book) error
+	Return(b *entity.Book) error
 }

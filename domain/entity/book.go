@@ -1,14 +1,12 @@
-package book
+package entity
 
 import (
 	"time"
-
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 )
 
 //Book data
 type Book struct {
-	ID        entity.ID
+	ID        ID
 	Title     string
 	Author    string
 	Pages     int

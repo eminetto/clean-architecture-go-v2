@@ -4,6 +4,8 @@ import (
 	"strings"
 	"time"
 
+	repo "github.com/eminetto/clean-architecture-go-v2/domain/repository/user"
+
 	"github.com/eminetto/clean-architecture-go-v2/domain"
 
 	"github.com/eminetto/clean-architecture-go-v2/pkg/password"
@@ -11,22 +13,22 @@ import (
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 )
 
-//manager  interface
-type manager struct {
-	repo repository
+//Service  interface
+type Service struct {
+	repo repo.Repository
 	pwd  password.Service
 }
 
-//NewManager create new repository
-func NewManager(r repository, pwd password.Service) *manager {
-	return &manager{
+//NewService create new use case
+func NewService(r repo.Repository, pwd password.Service) *Service {
+	return &Service{
 		repo: r,
 		pwd:  pwd,
 	}
 }
 
 //Create an user
-func (s *manager) Create(e *User) (entity.ID, error) {
+func (s *Service) CreateUser(e *entity.User) (entity.ID, error) {
 	e.ID = entity.NewID()
 	e.CreatedAt = time.Now()
 	pwd, err := s.pwd.Generate(e.Password)
@@ -38,23 +40,26 @@ func (s *manager) Create(e *User) (entity.ID, error) {
 }
 
 //Get an user
-func (s *manager) Get(id entity.ID) (*User, error) {
+func (s *Service) GetUser(id entity.ID) (*entity.User, error) {
 	return s.repo.Get(id)
 }
 
 //Search users
-func (s *manager) Search(query string) ([]*User, error) {
+func (s *Service) SearchUsers(query string) ([]*entity.User, error) {
 	return s.repo.Search(strings.ToLower(query))
 }
 
 //List users
-func (s *manager) List() ([]*User, error) {
+func (s *Service) ListUsers() ([]*entity.User, error) {
 	return s.repo.List()
 }
 
 //Delete an user
-func (s *manager) Delete(id entity.ID) error {
-	u, err := s.Get(id)
+func (s *Service) DeleteUser(id entity.ID) error {
+	u, err := s.GetUser(id)
+	if u == nil {
+		return domain.ErrNotFound
+	}
 	if err != nil {
 		return err
 	}
@@ -65,7 +70,7 @@ func (s *manager) Delete(id entity.ID) error {
 }
 
 //Update an user
-func (s *manager) Update(e *User) error {
+func (s *Service) UpdateUser(e *entity.User) error {
 	e.UpdatedAt = time.Now()
 	return s.repo.Update(e)
 }

@@ -9,13 +9,15 @@ import (
 	"strconv"
 	"time"
 
+	brepo "github.com/eminetto/clean-architecture-go-v2/domain/repository/book"
+	urepo "github.com/eminetto/clean-architecture-go-v2/domain/repository/user"
+	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
+	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/user"
+
 	"github.com/eminetto/clean-architecture-go-v2/pkg/password"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/loan"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
-
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity/book"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/codegangsta/negroni"
@@ -37,13 +39,13 @@ func main() {
 	}
 	defer db.Close()
 
-	bookRepo := book.NewMySQLRepository(db)
-	bookManager := book.NewManager(bookRepo)
+	bookRepo := brepo.NewMySQLRepository(db)
+	bookManager := book.NewService(bookRepo)
 
-	userRepo := user.NewMySQLRepoRepository(db)
-	userManager := user.NewManager(userRepo, password.NewService())
+	userRepo := urepo.NewMySQLRepoRepository(db)
+	userManager := user.NewService(userRepo, password.NewService())
 
-	loanUseCase := loan.NewUseCase(userManager, bookManager)
+	loanUseCase := loan.NewService(userManager, bookManager)
 
 	metricService, err := metric.NewPrometheusService()
 	if err != nil {
