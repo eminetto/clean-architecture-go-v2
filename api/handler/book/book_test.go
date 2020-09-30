@@ -1,4 +1,4 @@
-package handler
+package book
 
 import (
 	"encoding/json"
@@ -24,7 +24,7 @@ func Test_listBooks(t *testing.T) {
 	manager := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeBookHandlers(r, *n, manager)
+	MakeHandlers(r, *n, manager)
 	path, err := r.GetRoute("listBooks").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book", path)
@@ -74,7 +74,7 @@ func Test_createBook(t *testing.T) {
 	manager := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeBookHandlers(r, *n, manager)
+	MakeHandlers(r, *n, manager)
 	path, err := r.GetRoute("createBook").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book", path)
@@ -106,7 +106,7 @@ func Test_getBook(t *testing.T) {
 	manager := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeBookHandlers(r, *n, manager)
+	MakeHandlers(r, *n, manager)
 	path, err := r.GetRoute("getBook").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book/{id}", path)
@@ -133,7 +133,7 @@ func Test_deleteBook(t *testing.T) {
 	manager := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeBookHandlers(r, *n, manager)
+	MakeHandlers(r, *n, manager)
 	path, err := r.GetRoute("deleteBook").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book/{id}", path)

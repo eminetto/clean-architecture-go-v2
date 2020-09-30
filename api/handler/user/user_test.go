@@ -1,4 +1,4 @@
-package handler
+package user
 
 import (
 	"encoding/json"
@@ -24,7 +24,7 @@ func Test_listUsers(t *testing.T) {
 	m := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeUserHandlers(r, *n, m)
+	MakeHandlers(r, *n, m)
 	path, err := r.GetRoute("listUsers").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/user", path)
@@ -74,7 +74,7 @@ func Test_createUser(t *testing.T) {
 	m := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeUserHandlers(r, *n, m)
+	MakeHandlers(r, *n, m)
 	path, err := r.GetRoute("createUser").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/user", path)
@@ -107,7 +107,7 @@ func Test_getUser(t *testing.T) {
 	m := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeUserHandlers(r, *n, m)
+	MakeHandlers(r, *n, m)
 	path, err := r.GetRoute("getUser").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/user/{id}", path)
@@ -134,7 +134,7 @@ func Test_deleteUser(t *testing.T) {
 	m := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeUserHandlers(r, *n, m)
+	MakeHandlers(r, *n, m)
 	path, err := r.GetRoute("deleteUser").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/user/{id}", path)

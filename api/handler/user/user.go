@@ -1,4 +1,4 @@
-package handler
+package user
 
 import (
 	"encoding/json"
@@ -6,28 +6,29 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
+	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/user"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain"
 
 	"github.com/eminetto/clean-architecture-go-v2/api/presenter"
 
-	"github.com/codegangsta/negroni"
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+
+	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 )
 
-func listBooks(service book.UseCase) http.Handler {
+func listUsers(service user.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		errorMessage := "Error reading books"
-		var data []*entity.Book
+		errorMessage := "Error reading users"
+		var data []*entity.User
 		var err error
-		title := r.URL.Query().Get("title")
+		name := r.URL.Query().Get("name")
 		switch {
-		case title == "":
-			data, err = service.ListBooks()
+		case name == "":
+			data, err = service.ListUsers()
 		default:
-			data, err = service.SearchBooks(title)
+			data, err = service.SearchUsers(name)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		if err != nil && err != domain.ErrNotFound {
@@ -41,14 +42,13 @@ func listBooks(service book.UseCase) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		var toJ []*presenter.Book
+		var toJ []*presenter.User
 		for _, d := range data {
-			toJ = append(toJ, &presenter.Book{
-				ID:       d.ID,
-				Title:    d.Title,
-				Author:   d.Author,
-				Pages:    d.Pages,
-				Quantity: d.Quantity,
+			toJ = append(toJ, &presenter.User{
+				ID:        d.ID,
+				Email:     d.Email,
+				FirstName: d.FirstName,
+				LastName:  d.LastName,
 			})
 		}
 		if err := json.NewEncoder(w).Encode(toJ); err != nil {
@@ -58,14 +58,14 @@ func listBooks(service book.UseCase) http.Handler {
 	})
 }
 
-func createBook(service book.UseCase) http.Handler {
+func createUser(service user.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		errorMessage := "Error adding book"
+		errorMessage := "Error adding user"
 		var input struct {
-			Title    string `json:"title"`
-			Author   string `json:"author"`
-			Pages    int    `json:"pages"`
-			Quantity int    `json:"quantity"`
+			Email     string `json:"email"`
+			Password  string `json:"password"`
+			FirstName string `json:"first_name"`
+			LastName  string `json:"last_name"`
 		}
 		err := json.NewDecoder(r.Body).Decode(&input)
 		if err != nil {
@@ -74,27 +74,27 @@ func createBook(service book.UseCase) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		b := &entity.Book{
+		//TODO: validate data ;)
+		u := &entity.User{
 			ID:        entity.NewID(),
-			Title:     input.Title,
-			Author:    input.Author,
-			Pages:     input.Pages,
-			Quantity:  input.Quantity,
+			Email:     input.Email,
+			Password:  input.Password,
+			FirstName: input.FirstName,
+			LastName:  input.LastName,
 			CreatedAt: time.Now(),
 		}
-		b.ID, err = service.CreateBook(b)
+		u.ID, err = service.CreateUser(u)
 		if err != nil {
 			log.Println(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return
 		}
-		toJ := &presenter.Book{
-			ID:       b.ID,
-			Title:    b.Title,
-			Author:   b.Author,
-			Pages:    b.Pages,
-			Quantity: b.Quantity,
+		toJ := &presenter.User{
+			ID:        u.ID,
+			Email:     u.Email,
+			FirstName: u.FirstName,
+			LastName:  u.LastName,
 		}
 
 		w.WriteHeader(http.StatusCreated)
@@ -107,9 +107,9 @@ func createBook(service book.UseCase) http.Handler {
 	})
 }
 
-func getBook(service book.UseCase) http.Handler {
+func getUser(service user.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		errorMessage := "Error reading book"
+		errorMessage := "Error reading user"
 		vars := mux.Vars(r)
 		id, err := entity.StringToID(vars["id"])
 		if err != nil {
@@ -117,7 +117,8 @@ func getBook(service book.UseCase) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		data, err := service.GetBook(id)
+		data, err := service.GetUser(id)
+		w.Header().Set("Content-Type", "application/json")
 		if err != nil && err != domain.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
@@ -129,12 +130,11 @@ func getBook(service book.UseCase) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		toJ := &presenter.Book{
-			ID:       data.ID,
-			Title:    data.Title,
-			Author:   data.Author,
-			Pages:    data.Pages,
-			Quantity: data.Quantity,
+		toJ := &presenter.User{
+			ID:        data.ID,
+			Email:     data.Email,
+			FirstName: data.FirstName,
+			LastName:  data.LastName,
 		}
 		if err := json.NewEncoder(w).Encode(toJ); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -143,9 +143,9 @@ func getBook(service book.UseCase) http.Handler {
 	})
 }
 
-func deleteBook(service book.UseCase) http.Handler {
+func deleteUser(service user.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		errorMessage := "Error removing bookmark"
+		errorMessage := "Error removing user"
 		vars := mux.Vars(r)
 		id, err := entity.StringToID(vars["id"])
 		if err != nil {
@@ -153,7 +153,7 @@ func deleteBook(service book.UseCase) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		err = service.DeleteBook(id)
+		err = service.DeleteUser(id)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
@@ -162,21 +162,21 @@ func deleteBook(service book.UseCase) http.Handler {
 	})
 }
 
-//MakeBookHandlers make url handlers
-func MakeBookHandlers(r *mux.Router, n negroni.Negroni, service book.UseCase) {
-	r.Handle("/v1/book", n.With(
-		negroni.Wrap(listBooks(service)),
-	)).Methods("GET", "OPTIONS").Name("listBooks")
+//MakeHandlers make url handlers
+func MakeHandlers(r *mux.Router, n negroni.Negroni, service user.UseCase) {
+	r.Handle("/v1/user", n.With(
+		negroni.Wrap(listUsers(service)),
+	)).Methods("GET", "OPTIONS").Name("listUsers")
 
-	r.Handle("/v1/book", n.With(
-		negroni.Wrap(createBook(service)),
-	)).Methods("POST", "OPTIONS").Name("createBook")
+	r.Handle("/v1/user", n.With(
+		negroni.Wrap(createUser(service)),
+	)).Methods("POST", "OPTIONS").Name("createUser")
 
-	r.Handle("/v1/book/{id}", n.With(
-		negroni.Wrap(getBook(service)),
-	)).Methods("GET", "OPTIONS").Name("getBook")
+	r.Handle("/v1/user/{id}", n.With(
+		negroni.Wrap(getUser(service)),
+	)).Methods("GET", "OPTIONS").Name("getUser")
 
-	r.Handle("/v1/book/{id}", n.With(
-		negroni.Wrap(deleteBook(service)),
-	)).Methods("DELETE", "OPTIONS").Name("deleteBook")
+	r.Handle("/v1/user/{id}", n.With(
+		negroni.Wrap(deleteUser(service)),
+	)).Methods("DELETE", "OPTIONS").Name("deleteUser")
 }
