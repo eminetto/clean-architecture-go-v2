@@ -4,8 +4,6 @@ import (
 	"strings"
 	"time"
 
-	repo "github.com/eminetto/clean-architecture-go-v2/domain/repository/user"
-
 	"github.com/eminetto/clean-architecture-go-v2/domain"
 
 	"github.com/eminetto/clean-architecture-go-v2/pkg/password"
@@ -15,19 +13,19 @@ import (
 
 //Service  interface
 type Service struct {
-	repo repo.Repository
+	repo Repository
 	pwd  password.Service
 }
 
 //NewService create new use case
-func NewService(r repo.Repository, pwd password.Service) *Service {
+func NewService(r Repository, pwd password.Service) *Service {
 	return &Service{
 		repo: r,
 		pwd:  pwd,
 	}
 }
 
-//Create an user
+//CreateUser Create an user
 func (s *Service) CreateUser(e *entity.User) (entity.ID, error) {
 	e.ID = entity.NewID()
 	e.CreatedAt = time.Now()
@@ -39,22 +37,22 @@ func (s *Service) CreateUser(e *entity.User) (entity.ID, error) {
 	return s.repo.Create(e)
 }
 
-//Get an user
+//GetUser Get an user
 func (s *Service) GetUser(id entity.ID) (*entity.User, error) {
 	return s.repo.Get(id)
 }
 
-//Search users
+//SearchUsers Search users
 func (s *Service) SearchUsers(query string) ([]*entity.User, error) {
 	return s.repo.Search(strings.ToLower(query))
 }
 
-//List users
+//ListUsers List users
 func (s *Service) ListUsers() ([]*entity.User, error) {
 	return s.repo.List()
 }
 
-//Delete an user
+//DeleteUser Delete an user
 func (s *Service) DeleteUser(id entity.ID) error {
 	u, err := s.GetUser(id)
 	if u == nil {
@@ -69,7 +67,7 @@ func (s *Service) DeleteUser(id entity.ID) error {
 	return s.repo.Delete(id)
 }
 
-//Update an user
+//UpdateUser Update an user
 func (s *Service) UpdateUser(e *entity.User) error {
 	e.UpdatedAt = time.Now()
 	return s.repo.Update(e)

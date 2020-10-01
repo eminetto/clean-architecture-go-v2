@@ -3,7 +3,7 @@ package user
 import (
 	"testing"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/repository/user"
+	"github.com/eminetto/clean-architecture-go-v2/infra/repository/user"
 
 	"github.com/eminetto/clean-architecture-go-v2/pkg/password"
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/repository/book"
+	"github.com/eminetto/clean-architecture-go-v2/infra/repository/book"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain"
 

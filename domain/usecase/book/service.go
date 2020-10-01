@@ -4,8 +4,6 @@ import (
 	"strings"
 	"time"
 
-	repo "github.com/eminetto/clean-architecture-go-v2/domain/repository/book"
-
 	"github.com/eminetto/clean-architecture-go-v2/domain"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
@@ -13,24 +11,24 @@ import (
 
 //Service book usecase
 type Service struct {
-	repo repo.Repository
+	repo Repository
 }
 
 //NewService create new service
-func NewService(r repo.Repository) *Service {
+func NewService(r Repository) *Service {
 	return &Service{
 		repo: r,
 	}
 }
 
-//Create a book
+//CreateBook create a book
 func (s *Service) CreateBook(e *entity.Book) (entity.ID, error) {
 	e.ID = entity.NewID()
 	e.CreatedAt = time.Now()
 	return s.repo.Create(e)
 }
 
-//Get a book
+//GetBook get a book
 func (s *Service) GetBook(id entity.ID) (*entity.Book, error) {
 	b, err := s.repo.Get(id)
 	if b == nil {
@@ -43,7 +41,7 @@ func (s *Service) GetBook(id entity.ID) (*entity.Book, error) {
 	return b, nil
 }
 
-//Search books
+//SearchBooks search books
 func (s *Service) SearchBooks(query string) ([]*entity.Book, error) {
 	books, err := s.repo.Search(strings.ToLower(query))
 	if err != nil {
@@ -55,7 +53,7 @@ func (s *Service) SearchBooks(query string) ([]*entity.Book, error) {
 	return books, nil
 }
 
-//List books
+//ListBooks list books
 func (s *Service) ListBooks() ([]*entity.Book, error) {
 	books, err := s.repo.List()
 	if err != nil {
@@ -67,7 +65,7 @@ func (s *Service) ListBooks() ([]*entity.Book, error) {
 	return books, nil
 }
 
-//Delete a book
+//DeleteBook Delete a book
 func (s *Service) DeleteBook(id entity.ID) error {
 	_, err := s.GetBook(id)
 	if err != nil {
@@ -76,7 +74,7 @@ func (s *Service) DeleteBook(id entity.ID) error {
 	return s.repo.Delete(id)
 }
 
-//Update a book
+//UpdateBook Update a book
 func (s *Service) UpdateBook(e *entity.Book) error {
 	return s.repo.Update(e)
 }

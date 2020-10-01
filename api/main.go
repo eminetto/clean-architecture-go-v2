@@ -9,10 +9,10 @@ import (
 	"strconv"
 	"time"
 
-	brepo "github.com/eminetto/clean-architecture-go-v2/domain/repository/book"
-	urepo "github.com/eminetto/clean-architecture-go-v2/domain/repository/user"
 	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
 	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/user"
+	brepo "github.com/eminetto/clean-architecture-go-v2/infra/repository/book"
+	urepo "github.com/eminetto/clean-architecture-go-v2/infra/repository/user"
 
 	"github.com/eminetto/clean-architecture-go-v2/pkg/password"
 

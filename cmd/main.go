@@ -7,8 +7,8 @@ import (
 	"log"
 	"os"
 
-	repo "github.com/eminetto/clean-architecture-go-v2/domain/repository/book"
 	book "github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
+	repo "github.com/eminetto/clean-architecture-go-v2/infra/repository/book"
 
 	"github.com/eminetto/clean-architecture-go-v2/config"
 	_ "github.com/go-sql-driver/mysql"
