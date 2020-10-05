@@ -5,9 +5,10 @@
 package mock
 
 import (
+	reflect "reflect"
+
 	entity "github.com/eminetto/clean-architecture-go-v2/domain/entity"
 	gomock "github.com/golang/mock/gomock"
-	reflect "reflect"
 )
 
 // MockReader is a mock of Reader interface
@@ -324,18 +325,18 @@ func (mr *MockUseCaseMockRecorder) ListBooks() *gomock.Call {
 }
 
 // CreateBook mocks base method
-func (m *MockUseCase) CreateBook(e *entity.Book) (entity.ID, error) {
+func (m *MockUseCase) CreateBook(title, author string, pages, quantity int) (entity.ID, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateBook", e)
+	ret := m.ctrl.Call(m, "CreateBook", title, author, pages, quantity)
 	ret0, _ := ret[0].(entity.ID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateBook indicates an expected call of CreateBook
-func (mr *MockUseCaseMockRecorder) CreateBook(e interface{}) *gomock.Call {
+func (mr *MockUseCaseMockRecorder) CreateBook(title, author, pages, quantity interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBook", reflect.TypeOf((*MockUseCase)(nil).CreateBook), e)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateBook", reflect.TypeOf((*MockUseCase)(nil).CreateBook), title, author, pages, quantity)
 }
 
 // UpdateBook mocks base method

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/user"
 
@@ -74,16 +73,7 @@ func createUser(service user.UseCase) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		//TODO: validate data ;)
-		u := &entity.User{
-			ID:        entity.NewID(),
-			Email:     input.Email,
-			Password:  input.Password,
-			FirstName: input.FirstName,
-			LastName:  input.LastName,
-			CreatedAt: time.Now(),
-		}
-		u.ID, err = service.CreateUser(u)
+		id, err := service.CreateUser(input.Email, input.Password, input.FirstName, input.LastName)
 		if err != nil {
 			log.Println(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
@@ -91,15 +81,14 @@ func createUser(service user.UseCase) http.Handler {
 			return
 		}
 		toJ := &presenter.User{
-			ID:        u.ID,
-			Email:     u.Email,
-			FirstName: u.FirstName,
-			LastName:  u.LastName,
+			ID:        id,
+			Email:     input.Email,
+			FirstName: input.FirstName,
+			LastName:  input.LastName,
 		}
 
 		w.WriteHeader(http.StatusCreated)
 		if err := json.NewEncoder(w).Encode(toJ); err != nil {
-			log.Println(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return

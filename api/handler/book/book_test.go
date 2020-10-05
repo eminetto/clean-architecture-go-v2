@@ -28,7 +28,9 @@ func Test_listBooks(t *testing.T) {
 	path, err := r.GetRoute("listBooks").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book", path)
-	b := entity.NewFixtureBook()
+	b := &entity.Book{
+		ID: entity.NewID(),
+	}
 	manager.EXPECT().
 		ListBooks().
 		Return([]*entity.Book{b}, nil)
@@ -57,7 +59,9 @@ func Test_listBooks_Search(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
 	manager := mock.NewMockUseCase(controller)
-	b := entity.NewFixtureBook()
+	b := &entity.Book{
+		ID: entity.NewID(),
+	}
 	manager.EXPECT().
 		SearchBooks("ozzy").
 		Return([]*entity.Book{b}, nil)
@@ -80,7 +84,7 @@ func Test_createBook(t *testing.T) {
 	assert.Equal(t, "/v1/book", path)
 
 	manager.EXPECT().
-		CreateBook(gomock.Any()).
+		CreateBook(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(entity.NewID(), nil)
 	h := createBook(manager)
 
@@ -110,7 +114,9 @@ func Test_getBook(t *testing.T) {
 	path, err := r.GetRoute("getBook").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book/{id}", path)
-	b := entity.NewFixtureBook()
+	b := &entity.Book{
+		ID: entity.NewID(),
+	}
 	manager.EXPECT().
 		GetBook(b.ID).
 		Return(b, nil)
@@ -137,7 +143,9 @@ func Test_deleteBook(t *testing.T) {
 	path, err := r.GetRoute("deleteBook").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/book/{id}", path)
-	b := entity.NewFixtureBook()
+	b := &entity.Book{
+		ID: entity.NewID(),
+	}
 	manager.EXPECT().DeleteBook(b.ID).Return(nil)
 	handler := deleteBook(manager)
 	req, _ := http.NewRequest("DELETE", "/v1/bookmark/"+b.ID.String(), nil)

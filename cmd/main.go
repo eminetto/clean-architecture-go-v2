@@ -42,8 +42,8 @@ func main() {
 	}
 	defer db.Close()
 	repo := repo.NewMySQLRepository(db)
-	manager := book.NewService(repo)
-	all, err := manager.SearchBooks(query)
+	service := book.NewService(repo)
+	all, err := service.SearchBooks(query)
 	if err != nil {
 		log.Fatal(err)
 	}

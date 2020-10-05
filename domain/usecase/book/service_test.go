@@ -2,6 +2,7 @@ package book
 
 import (
 	"testing"
+	"time"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 
@@ -12,25 +13,34 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func newFixtureBook() *entity.Book {
+	return &entity.Book{
+		Title:     "I Am Ozzy",
+		Author:    "Ozzy Osbourne",
+		Pages:     294,
+		Quantity:  1,
+		CreatedAt: time.Now(),
+	}
+}
+
 func Test_Create(t *testing.T) {
 	repo := book.NewInmemRepository()
 	m := NewService(repo)
-	u := entity.NewFixtureBook()
-	id, err := m.CreateBook(u)
+	u := newFixtureBook()
+	_, err := m.CreateBook(u.Title, u.Author, u.Pages, u.Quantity)
 	assert.Nil(t, err)
-	assert.Equal(t, u.ID, id)
 	assert.False(t, u.CreatedAt.IsZero())
 }
 
 func Test_SearchAndFind(t *testing.T) {
 	repo := book.NewInmemRepository()
 	m := NewService(repo)
-	u1 := entity.NewFixtureBook()
-	u2 := entity.NewFixtureBook()
+	u1 := newFixtureBook()
+	u2 := newFixtureBook()
 	u2.Title = "Lemmy: Biography"
 
-	uID, _ := m.CreateBook(u1)
-	_, _ = m.CreateBook(u2)
+	uID, _ := m.CreateBook(u1.Title, u1.Author, u1.Pages, u1.Quantity)
+	_, _ = m.CreateBook(u2.Title, u2.Author, u2.Pages, u2.Quantity)
 
 	t.Run("search", func(t *testing.T) {
 		c, err := m.SearchBooks("ozzy")
@@ -58,8 +68,8 @@ func Test_SearchAndFind(t *testing.T) {
 func Test_Update(t *testing.T) {
 	repo := book.NewInmemRepository()
 	m := NewService(repo)
-	u := entity.NewFixtureBook()
-	id, err := m.CreateBook(u)
+	u := newFixtureBook()
+	id, err := m.CreateBook(u.Title, u.Author, u.Pages, u.Quantity)
 	assert.Nil(t, err)
 	saved, _ := m.GetBook(id)
 	saved.Title = "Lemmy: Biography"
@@ -72,9 +82,9 @@ func Test_Update(t *testing.T) {
 func TestDelete(t *testing.T) {
 	repo := book.NewInmemRepository()
 	m := NewService(repo)
-	u1 := entity.NewFixtureBook()
-	u2 := entity.NewFixtureBook()
-	u2ID, _ := m.CreateBook(u2)
+	u1 := newFixtureBook()
+	u2 := newFixtureBook()
+	u2ID, _ := m.CreateBook(u2.Title, u2.Author, u2.Pages, u2.Quantity)
 
 	err := m.DeleteBook(u1.ID)
 	assert.Equal(t, domain.ErrNotFound, err)

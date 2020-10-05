@@ -14,8 +14,6 @@ import (
 	brepo "github.com/eminetto/clean-architecture-go-v2/infra/repository/book"
 	urepo "github.com/eminetto/clean-architecture-go-v2/infra/repository/user"
 
-	"github.com/eminetto/clean-architecture-go-v2/pkg/password"
-
 	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/loan"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -45,7 +43,7 @@ func main() {
 	bookService := book.NewService(bookRepo)
 
 	userRepo := urepo.NewMySQLRepoRepository(db)
-	userService := user.NewService(userRepo, password.NewService())
+	userService := user.NewService(userRepo)
 
 	loanUseCase := loan.NewService(userService, bookService)
 

@@ -5,9 +5,10 @@
 package mock
 
 import (
+	reflect "reflect"
+
 	entity "github.com/eminetto/clean-architecture-go-v2/domain/entity"
 	gomock "github.com/golang/mock/gomock"
-	reflect "reflect"
 )
 
 // MockReader is a mock of Reader interface
@@ -324,18 +325,18 @@ func (mr *MockUseCaseMockRecorder) ListUsers() *gomock.Call {
 }
 
 // CreateUser mocks base method
-func (m *MockUseCase) CreateUser(e *entity.User) (entity.ID, error) {
+func (m *MockUseCase) CreateUser(email, password, firstName, lastName string) (entity.ID, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateUser", e)
+	ret := m.ctrl.Call(m, "CreateUser", email, password, firstName, lastName)
 	ret0, _ := ret[0].(entity.ID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateUser indicates an expected call of CreateUser
-func (mr *MockUseCaseMockRecorder) CreateUser(e interface{}) *gomock.Call {
+func (mr *MockUseCaseMockRecorder) CreateUser(email, password, firstName, lastName interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockUseCase)(nil).CreateUser), e)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockUseCase)(nil).CreateUser), email, password, firstName, lastName)
 }
 
 // UpdateUser mocks base method

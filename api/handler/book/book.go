@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
 
@@ -74,27 +73,18 @@ func createBook(service book.UseCase) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		b := &entity.Book{
-			ID:        entity.NewID(),
-			Title:     input.Title,
-			Author:    input.Author,
-			Pages:     input.Pages,
-			Quantity:  input.Quantity,
-			CreatedAt: time.Now(),
-		}
-		b.ID, err = service.CreateBook(b)
+		id, err := service.CreateBook(input.Title, input.Author, input.Pages, input.Quantity)
 		if err != nil {
-			log.Println(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return
 		}
 		toJ := &presenter.Book{
-			ID:       b.ID,
-			Title:    b.Title,
-			Author:   b.Author,
-			Pages:    b.Pages,
-			Quantity: b.Quantity,
+			ID:       id,
+			Title:    input.Title,
+			Author:   input.Author,
+			Pages:    input.Pages,
+			Quantity: input.Quantity,
 		}
 
 		w.WriteHeader(http.StatusCreated)

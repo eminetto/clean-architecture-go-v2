@@ -29,7 +29,7 @@ type UseCase interface {
 	GetBook(id entity.ID) (*entity.Book, error)
 	SearchBooks(query string) ([]*entity.Book, error)
 	ListBooks() ([]*entity.Book, error)
-	CreateBook(e *entity.Book) (entity.ID, error)
+	CreateBook(title string, author string, pages int, quantity int) (entity.ID, error)
 	UpdateBook(e *entity.Book) error
 	DeleteBook(id entity.ID) error
 }

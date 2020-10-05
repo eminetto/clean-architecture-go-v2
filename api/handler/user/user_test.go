@@ -28,7 +28,9 @@ func Test_listUsers(t *testing.T) {
 	path, err := r.GetRoute("listUsers").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/user", path)
-	u := entity.NewFixtureUser()
+	u := &entity.User{
+		ID: entity.NewID(),
+	}
 	m.EXPECT().
 		ListUsers().
 		Return([]*entity.User{u}, nil)
@@ -57,7 +59,9 @@ func Test_listUsers_Search(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
 	m := mock.NewMockUseCase(controller)
-	u := entity.NewFixtureUser()
+	u := &entity.User{
+		ID: entity.NewID(),
+	}
 	m.EXPECT().
 		SearchUsers("ozzy").
 		Return([]*entity.User{u}, nil)
@@ -80,7 +84,7 @@ func Test_createUser(t *testing.T) {
 	assert.Equal(t, "/v1/user", path)
 
 	m.EXPECT().
-		CreateUser(gomock.Any()).
+		CreateUser(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(entity.NewID(), nil)
 	h := createUser(m)
 
@@ -111,7 +115,9 @@ func Test_getUser(t *testing.T) {
 	path, err := r.GetRoute("getUser").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/user/{id}", path)
-	u := entity.NewFixtureUser()
+	u := &entity.User{
+		ID: entity.NewID(),
+	}
 	m.EXPECT().
 		GetUser(u.ID).
 		Return(u, nil)
@@ -138,7 +144,9 @@ func Test_deleteUser(t *testing.T) {
 	path, err := r.GetRoute("deleteUser").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/user/{id}", path)
-	u := entity.NewFixtureUser()
+	u := &entity.User{
+		ID: entity.NewID(),
+	}
 	m.EXPECT().DeleteUser(u.ID).Return(nil)
 	handler := deleteUser(m)
 	req, _ := http.NewRequest("DELETE", "/v1/user/"+u.ID.String(), nil)

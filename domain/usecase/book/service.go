@@ -22,10 +22,16 @@ func NewService(r Repository) *Service {
 }
 
 //CreateBook create a book
-func (s *Service) CreateBook(e *entity.Book) (entity.ID, error) {
-	e.ID = entity.NewID()
-	e.CreatedAt = time.Now()
-	return s.repo.Create(e)
+func (s *Service) CreateBook(title string, author string, pages int, quantity int) (entity.ID, error) {
+	b, err := entity.NewBook(title, author, pages, quantity)
+	if err != nil {
+		return b.ID, err
+	}
+	err = b.Validate()
+	if err != nil {
+		return b.ID, err
+	}
+	return s.repo.Create(b)
 }
 
 //GetBook get a book
@@ -76,5 +82,10 @@ func (s *Service) DeleteBook(id entity.ID) error {
 
 //UpdateBook Update a book
 func (s *Service) UpdateBook(e *entity.Book) error {
+	err := e.Validate()
+	if err != nil {
+		return err
+	}
+	e.UpdatedAt = time.Now()
 	return s.repo.Update(e)
 }

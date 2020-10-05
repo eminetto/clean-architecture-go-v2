@@ -2,6 +2,8 @@ package entity
 
 import (
 	"time"
+
+	"github.com/eminetto/clean-architecture-go-v2/domain"
 )
 
 //Book data
@@ -13,4 +15,25 @@ type Book struct {
 	Quantity  int
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+//NewBook create a new book
+func NewBook(title string, author string, pages int, quantity int) (*Book, error) {
+	b := &Book{
+		ID:        NewID(),
+		Title:     title,
+		Author:    author,
+		Pages:     pages,
+		Quantity:  quantity,
+		CreatedAt: time.Now(),
+	}
+	return b, nil
+}
+
+//Validate validate book
+func (b *Book) Validate() error {
+	if b.Title == "" || b.Author == "" || b.Pages <= 0 {
+		return domain.ErrInvalidEntity
+	}
+	return nil
 }

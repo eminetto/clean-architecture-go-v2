@@ -6,34 +6,31 @@ import (
 
 	"github.com/eminetto/clean-architecture-go-v2/domain"
 
-	"github.com/eminetto/clean-architecture-go-v2/pkg/password"
-
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 )
 
 //Service  interface
 type Service struct {
 	repo Repository
-	pwd  password.Service
 }
 
 //NewService create new use case
-func NewService(r Repository, pwd password.Service) *Service {
+func NewService(r Repository) *Service {
 	return &Service{
 		repo: r,
-		pwd:  pwd,
 	}
 }
 
 //CreateUser Create an user
-func (s *Service) CreateUser(e *entity.User) (entity.ID, error) {
-	e.ID = entity.NewID()
-	e.CreatedAt = time.Now()
-	pwd, err := s.pwd.Generate(e.Password)
+func (s *Service) CreateUser(email, password, firstName, lastName string) (entity.ID, error) {
+	e, err := entity.NewUser(email, password, firstName, lastName)
 	if err != nil {
-		return e.ID, err
+		return e.ID, domain.ErrInvalidEntity
 	}
-	e.Password = pwd
+	err = e.Validate()
+	if err != nil {
+		return e.ID, domain.ErrInvalidEntity
+	}
 	return s.repo.Create(e)
 }
 
@@ -69,6 +66,10 @@ func (s *Service) DeleteUser(id entity.ID) error {
 
 //UpdateUser Update an user
 func (s *Service) UpdateUser(e *entity.User) error {
+	err := e.Validate()
+	if err != nil {
+		return domain.ErrInvalidEntity
+	}
 	e.UpdatedAt = time.Now()
 	return s.repo.Update(e)
 }

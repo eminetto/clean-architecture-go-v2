@@ -34,12 +34,15 @@ func (s *Service) Borrow(u *entity.User, b *entity.Book) error {
 	if b.Quantity <= 0 {
 		return domain.ErrNotEnoughBooks
 	}
-	for _, v := range u.Books {
-		if v == b.ID {
-			return domain.ErrBookAlreadyBorrowed
-		}
+
+	_, err = u.GetBook(b.ID)
+	if err == nil {
+		return domain.ErrBookAlreadyBorrowed
 	}
-	u.Books = append(u.Books, b.ID)
+	err = u.AddBook(b.ID)
+	if err != nil {
+		return err
+	}
 	err = s.userService.UpdateUser(u)
 	if err != nil {
 		return err
@@ -66,13 +69,13 @@ func (s *Service) Return(b *entity.Book) error {
 	borrowed := false
 	var borrowedBy entity.ID
 	for _, u := range all {
-		for _, bookID := range u.Books {
-			if bookID == b.ID {
-				borrowed = true
-				borrowedBy = u.ID
-				break
-			}
+		_, err := u.GetBook(b.ID)
+		if err != nil {
+			continue
 		}
+		borrowed = true
+		borrowedBy = u.ID
+		break
 	}
 	if !borrowed {
 		return domain.ErrBookNotBorrowed
@@ -81,15 +84,13 @@ func (s *Service) Return(b *entity.Book) error {
 	if err != nil {
 		return err
 	}
-	for i, j := range u.Books {
-		if j == b.ID {
-			u.Books = append(u.Books[:i], u.Books[i+1:]...)
-			err = s.userService.UpdateUser(u)
-			if err != nil {
-				return err
-			}
-			break
-		}
+	err = u.RemoveBook(b.ID)
+	if err != nil {
+		return err
+	}
+	err = s.userService.UpdateUser(u)
+	if err != nil {
+		return err
 	}
 	b.Quantity++
 	err = s.bookService.UpdateBook(b)

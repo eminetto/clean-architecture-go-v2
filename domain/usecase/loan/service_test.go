@@ -19,23 +19,35 @@ func Test_Borrow(t *testing.T) {
 	bMock := bmock.NewMockUseCase(controller)
 	uc := NewService(uMock, bMock)
 	t.Run("user not found", func(t *testing.T) {
-		u := entity.NewFixtureUser()
-		b := entity.NewFixtureBook()
+		u := &entity.User{
+			ID: entity.NewID(),
+		}
+		b := &entity.Book{
+			ID: entity.NewID(),
+		}
 		uMock.EXPECT().GetUser(u.ID).Return(nil, domain.ErrNotFound)
 		err := uc.Borrow(u, b)
 		assert.Equal(t, domain.ErrNotFound, err)
 	})
 	t.Run("book not found", func(t *testing.T) {
-		u := entity.NewFixtureUser()
-		b := entity.NewFixtureBook()
+		u := &entity.User{
+			ID: entity.NewID(),
+		}
+		b := &entity.Book{
+			ID: entity.NewID(),
+		}
 		uMock.EXPECT().GetUser(u.ID).Return(u, nil)
 		bMock.EXPECT().GetBook(b.ID).Return(nil, domain.ErrNotFound)
 		err := uc.Borrow(u, b)
 		assert.Equal(t, domain.ErrNotFound, err)
 	})
 	t.Run("not enough books to borrow", func(t *testing.T) {
-		u := entity.NewFixtureUser()
-		b := entity.NewFixtureBook()
+		u := &entity.User{
+			ID: entity.NewID(),
+		}
+		b := &entity.Book{
+			ID: entity.NewID(),
+		}
 		b.Quantity = 0
 		uMock.EXPECT().GetUser(u.ID).Return(u, nil)
 		bMock.EXPECT().GetBook(b.ID).Return(b, nil)
@@ -43,9 +55,13 @@ func Test_Borrow(t *testing.T) {
 		assert.Equal(t, domain.ErrNotEnoughBooks, err)
 	})
 	t.Run("book already borrowed", func(t *testing.T) {
-		u := entity.NewFixtureUser()
-		b := entity.NewFixtureBook()
-		u.Books = []entity.ID{b.ID}
+		u := &entity.User{
+			ID: entity.NewID(),
+		}
+		b := &entity.Book{
+			ID: entity.NewID(),
+		}
+		u.AddBook(b.ID)
 		b.Quantity = 1
 		uMock.EXPECT().GetUser(u.ID).Return(u, nil)
 		bMock.EXPECT().GetBook(b.ID).Return(b, nil)
@@ -53,8 +69,13 @@ func Test_Borrow(t *testing.T) {
 		assert.Equal(t, domain.ErrBookAlreadyBorrowed, err)
 	})
 	t.Run("sucess", func(t *testing.T) {
-		u := entity.NewFixtureUser()
-		b := entity.NewFixtureBook()
+		u := &entity.User{
+			ID: entity.NewID(),
+		}
+		b := &entity.Book{
+			ID:       entity.NewID(),
+			Quantity: 10,
+		}
 		uMock.EXPECT().GetUser(u.ID).Return(u, nil)
 		bMock.EXPECT().GetBook(b.ID).Return(b, nil)
 		uMock.EXPECT().UpdateUser(u).Return(nil)
@@ -71,23 +92,33 @@ func Test_Return(t *testing.T) {
 	bMock := bmock.NewMockUseCase(controller)
 	uc := NewService(uMock, bMock)
 	t.Run("book not found", func(t *testing.T) {
-		b := entity.NewFixtureBook()
+		b := &entity.Book{
+			ID: entity.NewID(),
+		}
 		bMock.EXPECT().GetBook(b.ID).Return(nil, domain.ErrNotFound)
 		err := uc.Return(b)
 		assert.Equal(t, domain.ErrNotFound, err)
 	})
 	t.Run("book not borrowed", func(t *testing.T) {
-		u := entity.NewFixtureUser()
-		b := entity.NewFixtureBook()
+		u := &entity.User{
+			ID: entity.NewID(),
+		}
+		b := &entity.Book{
+			ID: entity.NewID(),
+		}
 		bMock.EXPECT().GetBook(b.ID).Return(b, nil)
 		uMock.EXPECT().ListUsers().Return([]*entity.User{u}, nil)
 		err := uc.Return(b)
 		assert.Equal(t, domain.ErrBookNotBorrowed, err)
 	})
 	t.Run("success", func(t *testing.T) {
-		u := entity.NewFixtureUser()
-		b := entity.NewFixtureBook()
-		u.Books = []entity.ID{b.ID}
+		u := &entity.User{
+			ID: entity.NewID(),
+		}
+		b := &entity.Book{
+			ID: entity.NewID(),
+		}
+		u.AddBook(b.ID)
 		bMock.EXPECT().GetBook(b.ID).Return(b, nil)
 		uMock.EXPECT().GetUser(u.ID).Return(u, nil)
 		uMock.EXPECT().ListUsers().Return([]*entity.User{u}, nil)

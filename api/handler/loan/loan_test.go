@@ -43,7 +43,9 @@ func Test_borrowBook(t *testing.T) {
 		assert.Equal(t, http.StatusNotFound, res.StatusCode)
 	})
 	t.Run("user not found", func(t *testing.T) {
-		b := entity.NewFixtureBook()
+		b := &entity.Book{
+			ID: entity.NewID(),
+		}
 		uID := entity.NewID()
 		bMock.EXPECT().GetBook(b.ID).Return(b, nil)
 		uMock.EXPECT().GetUser(uID).Return(nil, domain.ErrNotFound)
@@ -54,8 +56,12 @@ func Test_borrowBook(t *testing.T) {
 		assert.Equal(t, http.StatusNotFound, res.StatusCode)
 	})
 	t.Run("success", func(t *testing.T) {
-		b := entity.NewFixtureBook()
-		u := entity.NewFixtureUser()
+		b := &entity.Book{
+			ID: entity.NewID(),
+		}
+		u := &entity.User{
+			ID: entity.NewID(),
+		}
 		bMock.EXPECT().GetBook(b.ID).Return(b, nil)
 		uMock.EXPECT().GetUser(u.ID).Return(u, nil)
 		lMock.EXPECT().Borrow(u, b).Return(nil)
@@ -91,7 +97,9 @@ func Test_returnBook(t *testing.T) {
 		assert.Equal(t, http.StatusNotFound, res.StatusCode)
 	})
 	t.Run("success", func(t *testing.T) {
-		b := entity.NewFixtureBook()
+		b := &entity.Book{
+			ID: entity.NewID(),
+		}
 		bMock.EXPECT().GetBook(b.ID).Return(b, nil)
 		lMock.EXPECT().Return(b).Return(nil)
 		ts := httptest.NewServer(r)
