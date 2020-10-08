@@ -5,10 +5,9 @@
 package mock
 
 import (
-	reflect "reflect"
-
 	entity "github.com/eminetto/clean-architecture-go-v2/domain/entity"
 	gomock "github.com/golang/mock/gomock"
+	reflect "reflect"
 )
 
 // MockReader is a mock of Reader interface

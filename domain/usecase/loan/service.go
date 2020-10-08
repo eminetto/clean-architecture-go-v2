@@ -35,10 +35,6 @@ func (s *Service) Borrow(u *entity.User, b *entity.Book) error {
 		return domain.ErrNotEnoughBooks
 	}
 
-	_, err = u.GetBook(b.ID)
-	if err == nil {
-		return domain.ErrBookAlreadyBorrowed
-	}
 	err = u.AddBook(b.ID)
 	if err != nil {
 		return err

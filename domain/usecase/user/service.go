@@ -25,11 +25,7 @@ func NewService(r Repository) *Service {
 func (s *Service) CreateUser(email, password, firstName, lastName string) (entity.ID, error) {
 	e, err := entity.NewUser(email, password, firstName, lastName)
 	if err != nil {
-		return e.ID, domain.ErrInvalidEntity
-	}
-	err = e.Validate()
-	if err != nil {
-		return e.ID, domain.ErrInvalidEntity
+		return e.ID, err
 	}
 	return s.repo.Create(e)
 }

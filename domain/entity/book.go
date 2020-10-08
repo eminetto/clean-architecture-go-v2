@@ -27,12 +27,16 @@ func NewBook(title string, author string, pages int, quantity int) (*Book, error
 		Quantity:  quantity,
 		CreatedAt: time.Now(),
 	}
+	err := b.Validate()
+	if err != nil {
+		return nil, domain.ErrInvalidEntity
+	}
 	return b, nil
 }
 
 //Validate validate book
 func (b *Book) Validate() error {
-	if b.Title == "" || b.Author == "" || b.Pages <= 0 {
+	if b.Title == "" || b.Author == "" || b.Pages <= 0 || b.Quantity <= 0 {
 		return domain.ErrInvalidEntity
 	}
 	return nil

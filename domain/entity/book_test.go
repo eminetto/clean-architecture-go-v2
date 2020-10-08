@@ -9,7 +9,7 @@ import (
 )
 
 func TestNewBook(t *testing.T) {
-	b, err := entity.NewBook("American Gods", "Neil Gaiman", 100, 0)
+	b, err := entity.NewBook("American Gods", "Neil Gaiman", 100, 1)
 	assert.Nil(t, err)
 	assert.Equal(t, b.Title, "American Gods")
 	assert.NotNil(t, b.ID)
@@ -37,7 +37,7 @@ func TestBookValidate(t *testing.T) {
 			author:   "Neil Gaiman",
 			pages:    100,
 			quantity: 0,
-			want:     nil,
+			want:     domain.ErrInvalidEntity,
 		},
 		{
 			title:    "",
@@ -63,8 +63,7 @@ func TestBookValidate(t *testing.T) {
 	}
 	for _, tc := range tests {
 
-		b, err := entity.NewBook(tc.title, tc.author, tc.pages, tc.quantity)
-		err = b.Validate()
+		_, err := entity.NewBook(tc.title, tc.author, tc.pages, tc.quantity)
 		assert.Equal(t, err, tc.want)
 	}
 

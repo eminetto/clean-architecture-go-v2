@@ -19,8 +19,9 @@ type User struct {
 	Books     []ID
 }
 
+//NewUser create a new user
 func NewUser(email, password, firstName, lastName string) (*User, error) {
-	e := &User{
+	u := &User{
 		ID:        NewID(),
 		Email:     email,
 		FirstName: firstName,
@@ -31,15 +32,25 @@ func NewUser(email, password, firstName, lastName string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
-	e.Password = pwd
-	return e, nil
+	u.Password = pwd
+	err = u.Validate()
+	if err != nil {
+		return nil, domain.ErrInvalidEntity
+	}
+	return u, nil
 }
 
+//AddBook add a book
 func (u *User) AddBook(id ID) error {
+	_, err := u.GetBook(id)
+	if err == nil {
+		return domain.ErrBookAlreadyBorrowed
+	}
 	u.Books = append(u.Books, id)
 	return nil
 }
 
+//RemoveBook remove a book
 func (u *User) RemoveBook(id ID) error {
 	for i, j := range u.Books {
 		if j == id {
@@ -50,6 +61,7 @@ func (u *User) RemoveBook(id ID) error {
 	return domain.ErrNotFound
 }
 
+//GetBook get a book
 func (u *User) GetBook(id ID) (ID, error) {
 	for _, v := range u.Books {
 		if v == id {
@@ -59,6 +71,7 @@ func (u *User) GetBook(id ID) (ID, error) {
 	return id, domain.ErrNotFound
 }
 
+//Validate validate data
 func (u *User) Validate() error {
 	if u.Email == "" || u.FirstName == "" || u.LastName == "" || u.Password == "" {
 		return domain.ErrInvalidEntity
@@ -67,6 +80,7 @@ func (u *User) Validate() error {
 	return nil
 }
 
+//ValidatePassword
 func (u *User) ValidatePassword(p string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(p))
 	if err != nil {

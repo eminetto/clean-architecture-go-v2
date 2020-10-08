@@ -27,9 +27,13 @@ func TestValidatePassword(t *testing.T) {
 
 func TestAddBook(t *testing.T) {
 	u, _ := entity.NewUser("sjobs@apple.com", "new_password", "Steve", "Jobs")
-	err := u.AddBook(entity.NewID())
+	bID := entity.NewID()
+	err := u.AddBook(bID)
 	assert.Nil(t, err)
 	assert.Equal(t, 1, len(u.Books))
+	err = u.AddBook(bID)
+	assert.Equal(t, domain.ErrBookAlreadyBorrowed, err)
+
 }
 
 func TestRemoveBook(t *testing.T) {
@@ -101,8 +105,7 @@ func TestUserValidate(t *testing.T) {
 	}
 	for _, tc := range tests {
 
-		u, err := entity.NewUser(tc.email, tc.password, tc.firstName, tc.lastName)
-		err = u.Validate()
+		_, err := entity.NewUser(tc.email, tc.password, tc.firstName, tc.lastName)
 		assert.Equal(t, err, tc.want)
 	}
 

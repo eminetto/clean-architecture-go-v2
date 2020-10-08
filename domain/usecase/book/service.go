@@ -27,10 +27,6 @@ func (s *Service) CreateBook(title string, author string, pages int, quantity in
 	if err != nil {
 		return b.ID, err
 	}
-	err = b.Validate()
-	if err != nil {
-		return b.ID, err
-	}
 	return s.repo.Create(b)
 }
 
