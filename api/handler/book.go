@@ -1,4 +1,4 @@
-package book
+package handler
 
 import (
 	"encoding/json"
@@ -152,8 +152,8 @@ func deleteBook(service book.UseCase) http.Handler {
 	})
 }
 
-//MakeHandlers make url handlers
-func MakeHandlers(r *mux.Router, n negroni.Negroni, service book.UseCase) {
+//MakeBookHandlers make url handlers
+func MakeBookHandlers(r *mux.Router, n negroni.Negroni, service book.UseCase) {
 	r.Handle("/v1/book", n.With(
 		negroni.Wrap(listBooks(service)),
 	)).Methods("GET", "OPTIONS").Name("listBooks")

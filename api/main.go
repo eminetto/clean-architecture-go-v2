@@ -19,9 +19,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/codegangsta/negroni"
-	bhandler "github.com/eminetto/clean-architecture-go-v2/api/handler/book"
-	lhandler "github.com/eminetto/clean-architecture-go-v2/api/handler/loan"
-	uhandler "github.com/eminetto/clean-architecture-go-v2/api/handler/user"
+	"github.com/eminetto/clean-architecture-go-v2/api/handler"
 	"github.com/eminetto/clean-architecture-go-v2/api/middleware"
 	"github.com/eminetto/clean-architecture-go-v2/config"
 	"github.com/eminetto/clean-architecture-go-v2/pkg/metric"
@@ -59,13 +57,13 @@ func main() {
 		negroni.NewLogger(),
 	)
 	//book
-	bhandler.MakeHandlers(r, *n, bookService)
+	handler.MakeBookHandlers(r, *n, bookService)
 
 	//user
-	uhandler.MakeHandlers(r, *n, userService)
+	handler.MakeUserHandlers(r, *n, userService)
 
 	//loan
-	lhandler.MakeHandlers(r, *n, bookService, userService, loanUseCase)
+	handler.MakeLoanHandlers(r, *n, bookService, userService, loanUseCase)
 
 	http.Handle("/", r)
 	http.Handle("/metrics", promhttp.Handler())

@@ -1,4 +1,4 @@
-package loan
+package handler
 
 import (
 	"fmt"
@@ -26,7 +26,7 @@ func Test_borrowBook(t *testing.T) {
 	lMock := lmock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeHandlers(r, *n, bMock, uMock, lMock)
+	MakeLoanHandlers(r, *n, bMock, uMock, lMock)
 	path, err := r.GetRoute("borrowBook").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/loan/borrow/{book_id}/{user_id}", path)
@@ -81,7 +81,7 @@ func Test_returnBook(t *testing.T) {
 	lMock := lmock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
-	MakeHandlers(r, *n, bMock, uMock, lMock)
+	MakeLoanHandlers(r, *n, bMock, uMock, lMock)
 	path, err := r.GetRoute("returnBook").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/loan/return/{book_id}", path)

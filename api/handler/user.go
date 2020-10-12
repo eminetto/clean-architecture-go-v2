@@ -1,4 +1,4 @@
-package user
+package handler
 
 import (
 	"encoding/json"
@@ -151,8 +151,8 @@ func deleteUser(service user.UseCase) http.Handler {
 	})
 }
 
-//MakeHandlers make url handlers
-func MakeHandlers(r *mux.Router, n negroni.Negroni, service user.UseCase) {
+//MakeUserHandlers make url handlers
+func MakeUserHandlers(r *mux.Router, n negroni.Negroni, service user.UseCase) {
 	r.Handle("/v1/user", n.With(
 		negroni.Wrap(listUsers(service)),
 	)).Methods("GET", "OPTIONS").Name("listUsers")

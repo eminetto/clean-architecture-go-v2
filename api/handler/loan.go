@@ -1,4 +1,4 @@
-package loan
+package handler
 
 import (
 	"fmt"
@@ -96,8 +96,8 @@ func returnBook(bookService book.UseCase, loanService loan.UseCase) http.Handler
 	})
 }
 
-//MakeHandlers make url handlers
-func MakeHandlers(r *mux.Router, n negroni.Negroni, bookService book.UseCase, userService user.UseCase, loanService loan.UseCase) {
+//MakeLoanHandlers make url handlers
+func MakeLoanHandlers(r *mux.Router, n negroni.Negroni, bookService book.UseCase, userService user.UseCase, loanService loan.UseCase) {
 	r.Handle("/v1/loan/borrow/{book_id}/{user_id}", n.With(
 		negroni.Wrap(borrowBook(bookService, userService, loanService)),
 	)).Methods("GET", "OPTIONS").Name("borrowBook")
