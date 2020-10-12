@@ -1,4 +1,4 @@
-package user
+package repository
 
 import (
 	"fmt"
@@ -8,27 +8,27 @@ import (
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 )
 
-//IRepo in memory repo
-type IRepo struct {
+//UserInmem in memory repo
+type UserInmem struct {
 	m map[entity.ID]*entity.User
 }
 
-//NewInmemRepository create new repository
-func NewInmemRepository() *IRepo {
+//NewUserInmem create new repository
+func NewUserInmem() *UserInmem {
 	var m = map[entity.ID]*entity.User{}
-	return &IRepo{
+	return &UserInmem{
 		m: m,
 	}
 }
 
 //Create an user
-func (r *IRepo) Create(e *entity.User) (entity.ID, error) {
+func (r *UserInmem) Create(e *entity.User) (entity.ID, error) {
 	r.m[e.ID] = e
 	return e.ID, nil
 }
 
 //Get an user
-func (r *IRepo) Get(id entity.ID) (*entity.User, error) {
+func (r *UserInmem) Get(id entity.ID) (*entity.User, error) {
 	if r.m[id] == nil {
 		// return nil, fmt.Errorf("not found")
 		return nil, domain.ErrNotFound
@@ -37,7 +37,7 @@ func (r *IRepo) Get(id entity.ID) (*entity.User, error) {
 }
 
 //Update an user
-func (r *IRepo) Update(e *entity.User) error {
+func (r *UserInmem) Update(e *entity.User) error {
 	_, err := r.Get(e.ID)
 	if err != nil {
 		return err
@@ -47,7 +47,7 @@ func (r *IRepo) Update(e *entity.User) error {
 }
 
 //Search users
-func (r *IRepo) Search(query string) ([]*entity.User, error) {
+func (r *UserInmem) Search(query string) ([]*entity.User, error) {
 	var d []*entity.User
 	for _, j := range r.m {
 		if strings.Contains(strings.ToLower(j.FirstName), query) {
@@ -63,7 +63,7 @@ func (r *IRepo) Search(query string) ([]*entity.User, error) {
 }
 
 //List users
-func (r *IRepo) List() ([]*entity.User, error) {
+func (r *UserInmem) List() ([]*entity.User, error) {
 	var d []*entity.User
 	for _, j := range r.m {
 		d = append(d, j)
@@ -72,7 +72,7 @@ func (r *IRepo) List() ([]*entity.User, error) {
 }
 
 //Delete an user
-func (r *IRepo) Delete(id entity.ID) error {
+func (r *UserInmem) Delete(id entity.ID) error {
 	if r.m[id] == nil {
 		return fmt.Errorf("not found")
 	}

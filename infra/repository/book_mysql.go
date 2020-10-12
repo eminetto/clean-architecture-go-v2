@@ -1,4 +1,4 @@
-package book
+package repository
 
 import (
 	"database/sql"
@@ -7,20 +7,20 @@ import (
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 )
 
-//MySQLRepo mysql repo
-type MySQLRepo struct {
+//BookMySQL mysql repo
+type BookMySQL struct {
 	db *sql.DB
 }
 
-//NewMySQLRepository create new repository
-func NewMySQLRepository(db *sql.DB) *MySQLRepo {
-	return &MySQLRepo{
+//NewBookMySQL create new repository
+func NewBookMySQL(db *sql.DB) *BookMySQL {
+	return &BookMySQL{
 		db: db,
 	}
 }
 
 //Create a book
-func (r *MySQLRepo) Create(e *entity.Book) (entity.ID, error) {
+func (r *BookMySQL) Create(e *entity.Book) (entity.ID, error) {
 	stmt, err := r.db.Prepare(`
 		insert into book (id, title, author, pages, quantity, created_at) 
 		values(?,?,?,?,?,?)`)
@@ -46,7 +46,7 @@ func (r *MySQLRepo) Create(e *entity.Book) (entity.ID, error) {
 }
 
 //Get a book
-func (r *MySQLRepo) Get(id entity.ID) (*entity.Book, error) {
+func (r *BookMySQL) Get(id entity.ID) (*entity.Book, error) {
 	stmt, err := r.db.Prepare(`select id, title, author, pages, quantity, created_at from book where id = ?`)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (r *MySQLRepo) Get(id entity.ID) (*entity.Book, error) {
 }
 
 //Update a book
-func (r *MySQLRepo) Update(e *entity.Book) error {
+func (r *BookMySQL) Update(e *entity.Book) error {
 	e.UpdatedAt = time.Now()
 	_, err := r.db.Exec("update book set title = ?, author = ?, pages = ?, quantity = ?, updated_at = ? where id = ?", e.Title, e.Author, e.Pages, e.Quantity, e.UpdatedAt.Format("2006-01-02"), e.ID)
 	if err != nil {
@@ -73,7 +73,7 @@ func (r *MySQLRepo) Update(e *entity.Book) error {
 }
 
 //Search books
-func (r *MySQLRepo) Search(query string) ([]*entity.Book, error) {
+func (r *BookMySQL) Search(query string) ([]*entity.Book, error) {
 	stmt, err := r.db.Prepare(`select id, title, author, pages, quantity, created_at from book where title like ?`)
 	if err != nil {
 		return nil, err
@@ -96,7 +96,7 @@ func (r *MySQLRepo) Search(query string) ([]*entity.Book, error) {
 }
 
 //List books
-func (r *MySQLRepo) List() ([]*entity.Book, error) {
+func (r *BookMySQL) List() ([]*entity.Book, error) {
 	stmt, err := r.db.Prepare(`select id, title, author, pages, quantity, created_at from book`)
 	if err != nil {
 		return nil, err
@@ -118,7 +118,7 @@ func (r *MySQLRepo) List() ([]*entity.Book, error) {
 }
 
 //Delete a book
-func (r *MySQLRepo) Delete(id entity.ID) error {
+func (r *BookMySQL) Delete(id entity.ID) error {
 	_, err := r.db.Exec("delete from book where id = ?", id)
 	if err != nil {
 		return err

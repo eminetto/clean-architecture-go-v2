@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eminetto/clean-architecture-go-v2/infra/repository/user"
+	"github.com/eminetto/clean-architecture-go-v2/infra/repository"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain"
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
@@ -24,7 +24,7 @@ func newFixtureUser() *entity.User {
 }
 
 func Test_Create(t *testing.T) {
-	repo := user.NewInmemRepository()
+	repo := repository.NewUserInmem()
 	m := NewService(repo)
 	u := newFixtureUser()
 	_, err := m.CreateUser(u.Email, u.Password, u.FirstName, u.LastName)
@@ -34,7 +34,7 @@ func Test_Create(t *testing.T) {
 }
 
 func Test_SearchAndFind(t *testing.T) {
-	repo := user.NewInmemRepository()
+	repo := repository.NewUserInmem()
 	m := NewService(repo)
 	u1 := newFixtureUser()
 	u2 := newFixtureUser()
@@ -67,7 +67,7 @@ func Test_SearchAndFind(t *testing.T) {
 }
 
 func Test_Update(t *testing.T) {
-	repo := user.NewInmemRepository()
+	repo := repository.NewUserInmem()
 	m := NewService(repo)
 	u := newFixtureUser()
 	id, err := m.CreateUser(u.Email, u.Password, u.FirstName, u.LastName)
@@ -84,7 +84,7 @@ func Test_Update(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	repo := user.NewInmemRepository()
+	repo := repository.NewUserInmem()
 	m := NewService(repo)
 	u1 := newFixtureUser()
 	u2 := newFixtureUser()

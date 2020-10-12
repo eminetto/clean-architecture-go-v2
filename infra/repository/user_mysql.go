@@ -1,4 +1,4 @@
-package user
+package repository
 
 import (
 	"database/sql"
@@ -8,20 +8,20 @@ import (
 	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
 )
 
-//MySQLRepo mysql repo
-type MySQLRepo struct {
+//UserMySQL mysql repo
+type UserMySQL struct {
 	db *sql.DB
 }
 
-//NewMySQLRepoRepository create new repository
-func NewMySQLRepoRepository(db *sql.DB) *MySQLRepo {
-	return &MySQLRepo{
+//NewUserMySQL create new repository
+func NewUserMySQL(db *sql.DB) *UserMySQL {
+	return &UserMySQL{
 		db: db,
 	}
 }
 
 //Create an user
-func (r *MySQLRepo) Create(e *entity.User) (entity.ID, error) {
+func (r *UserMySQL) Create(e *entity.User) (entity.ID, error) {
 	stmt, err := r.db.Prepare(`
 		insert into user (id, email, password, first_name, last_name, created_at) 
 		values(?,?,?,?,?,?)`)
@@ -47,7 +47,7 @@ func (r *MySQLRepo) Create(e *entity.User) (entity.ID, error) {
 }
 
 //Get an user
-func (r *MySQLRepo) Get(id entity.ID) (*entity.User, error) {
+func (r *UserMySQL) Get(id entity.ID) (*entity.User, error) {
 	return getUser(id, r.db)
 }
 
@@ -81,7 +81,7 @@ func getUser(id entity.ID, db *sql.DB) (*entity.User, error) {
 }
 
 //Update an user
-func (r *MySQLRepo) Update(e *entity.User) error {
+func (r *UserMySQL) Update(e *entity.User) error {
 	e.UpdatedAt = time.Now()
 	_, err := r.db.Exec("update user set email = ?, password = ?, first_name = ?, last_name = ?, updated_at = ? where id = ?", e.Email, e.Password, e.FirstName, e.LastName, e.UpdatedAt.Format("2006-01-02"), e.ID)
 	if err != nil {
@@ -101,7 +101,7 @@ func (r *MySQLRepo) Update(e *entity.User) error {
 }
 
 //Search users
-func (r *MySQLRepo) Search(query string) ([]*entity.User, error) {
+func (r *UserMySQL) Search(query string) ([]*entity.User, error) {
 	stmt, err := r.db.Prepare(`select id from user where name like ?`)
 	if err != nil {
 		return nil, err
@@ -135,7 +135,7 @@ func (r *MySQLRepo) Search(query string) ([]*entity.User, error) {
 }
 
 //List users
-func (r *MySQLRepo) List() ([]*entity.User, error) {
+func (r *UserMySQL) List() ([]*entity.User, error) {
 	stmt, err := r.db.Prepare(`select id from user`)
 	if err != nil {
 		return nil, err
@@ -169,7 +169,7 @@ func (r *MySQLRepo) List() ([]*entity.User, error) {
 }
 
 //Delete an user
-func (r *MySQLRepo) Delete(id entity.ID) error {
+func (r *UserMySQL) Delete(id entity.ID) error {
 	_, err := r.db.Exec("delete from user where id = ?", id)
 	if err != nil {
 		return err

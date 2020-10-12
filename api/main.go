@@ -11,8 +11,7 @@ import (
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
 	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/user"
-	brepo "github.com/eminetto/clean-architecture-go-v2/infra/repository/book"
-	urepo "github.com/eminetto/clean-architecture-go-v2/infra/repository/user"
+	"github.com/eminetto/clean-architecture-go-v2/infra/repository"
 
 	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/loan"
 
@@ -37,10 +36,10 @@ func main() {
 	}
 	defer db.Close()
 
-	bookRepo := brepo.NewMySQLRepository(db)
+	bookRepo := repository.NewBookMySQL(db)
 	bookService := book.NewService(bookRepo)
 
-	userRepo := urepo.NewMySQLRepoRepository(db)
+	userRepo := repository.NewUserMySQL(db)
 	userService := user.NewService(userRepo)
 
 	loanUseCase := loan.NewService(userService, bookService)

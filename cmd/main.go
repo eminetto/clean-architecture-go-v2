@@ -7,8 +7,8 @@ import (
 	"log"
 	"os"
 
-	book "github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
-	repo "github.com/eminetto/clean-architecture-go-v2/infra/repository/book"
+	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
+	"github.com/eminetto/clean-architecture-go-v2/infra/repository"
 
 	"github.com/eminetto/clean-architecture-go-v2/config"
 	_ "github.com/go-sql-driver/mysql"
@@ -41,7 +41,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 	defer db.Close()
-	repo := repo.NewMySQLRepository(db)
+	repo := repository.NewBookMySQL(db)
 	service := book.NewService(repo)
 	all, err := service.SearchBooks(query)
 	if err != nil {
