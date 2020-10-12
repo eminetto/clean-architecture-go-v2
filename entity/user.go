@@ -79,7 +79,7 @@ func (u *User) Validate() error {
 	return nil
 }
 
-//ValidatePassword
+//ValidatePassword validate user password
 func (u *User) ValidatePassword(p string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(p))
 	if err != nil {
