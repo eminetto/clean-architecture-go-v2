@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 )
 
 //UserInmem in memory repo
@@ -30,8 +29,7 @@ func (r *UserInmem) Create(e *entity.User) (entity.ID, error) {
 //Get an user
 func (r *UserInmem) Get(id entity.ID) (*entity.User, error) {
 	if r.m[id] == nil {
-		// return nil, fmt.Errorf("not found")
-		return nil, domain.ErrNotFound
+		return nil, entity.ErrNotFound
 	}
 	return r.m[id], nil
 }
@@ -55,8 +53,7 @@ func (r *UserInmem) Search(query string) ([]*entity.User, error) {
 		}
 	}
 	if len(d) == 0 {
-		// return nil, fmt.Errorf("not found")
-		return nil, domain.ErrNotFound
+		return nil, entity.ErrNotFound
 	}
 
 	return d, nil

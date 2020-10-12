@@ -4,9 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain"
-
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 )
 
 //Service book usecase
@@ -34,7 +32,7 @@ func (s *Service) CreateBook(title string, author string, pages int, quantity in
 func (s *Service) GetBook(id entity.ID) (*entity.Book, error) {
 	b, err := s.repo.Get(id)
 	if b == nil {
-		return nil, domain.ErrNotFound
+		return nil, entity.ErrNotFound
 	}
 	if err != nil {
 		return nil, err
@@ -50,7 +48,7 @@ func (s *Service) SearchBooks(query string) ([]*entity.Book, error) {
 		return nil, err
 	}
 	if len(books) == 0 {
-		return nil, domain.ErrNotFound
+		return nil, entity.ErrNotFound
 	}
 	return books, nil
 }
@@ -62,7 +60,7 @@ func (s *Service) ListBooks() ([]*entity.Book, error) {
 		return nil, err
 	}
 	if len(books) == 0 {
-		return nil, domain.ErrNotFound
+		return nil, entity.ErrNotFound
 	}
 	return books, nil
 }

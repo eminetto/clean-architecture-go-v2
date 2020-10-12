@@ -4,15 +4,13 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
-	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/user"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/book"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/user"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/loan"
-
-	"github.com/eminetto/clean-architecture-go-v2/domain"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/loan"
 
 	"github.com/codegangsta/negroni"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 	"github.com/gorilla/mux"
 )
 
@@ -27,7 +25,7 @@ func borrowBook(bookService book.UseCase, userService user.UseCase, loanService 
 			return
 		}
 		b, err := bookService.GetBook(bID)
-		if err != nil && err != domain.ErrNotFound {
+		if err != nil && err != entity.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return
@@ -44,7 +42,7 @@ func borrowBook(bookService book.UseCase, userService user.UseCase, loanService 
 			return
 		}
 		u, err := userService.GetUser(uID)
-		if err != nil && err != domain.ErrNotFound {
+		if err != nil && err != entity.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return
@@ -76,7 +74,7 @@ func returnBook(bookService book.UseCase, loanService loan.UseCase) http.Handler
 			return
 		}
 		b, err := bookService.GetBook(bID)
-		if err != nil && err != domain.ErrNotFound {
+		if err != nil && err != entity.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return
@@ -87,7 +85,7 @@ func returnBook(bookService book.UseCase, loanService loan.UseCase) http.Handler
 			return
 		}
 		err = loanService.Return(b)
-		if err != nil && err != domain.ErrNotFound {
+		if err != nil && err != entity.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return

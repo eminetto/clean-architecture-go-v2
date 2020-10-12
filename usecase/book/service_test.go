@@ -4,10 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 	"github.com/eminetto/clean-architecture-go-v2/infra/repository"
-
-	"github.com/eminetto/clean-architecture-go-v2/domain"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -48,7 +46,7 @@ func Test_SearchAndFind(t *testing.T) {
 		assert.Equal(t, "I Am Ozzy", c[0].Title)
 
 		c, err = m.SearchBooks("dio")
-		assert.Equal(t, domain.ErrNotFound, err)
+		assert.Equal(t, entity.ErrNotFound, err)
 		assert.Nil(t, c)
 	})
 	t.Run("list all", func(t *testing.T) {
@@ -86,10 +84,10 @@ func TestDelete(t *testing.T) {
 	u2ID, _ := m.CreateBook(u2.Title, u2.Author, u2.Pages, u2.Quantity)
 
 	err := m.DeleteBook(u1.ID)
-	assert.Equal(t, domain.ErrNotFound, err)
+	assert.Equal(t, entity.ErrNotFound, err)
 
 	err = m.DeleteBook(u2ID)
 	assert.Nil(t, err)
 	_, err = m.GetBook(u2ID)
-	assert.Equal(t, domain.ErrNotFound, err)
+	assert.Equal(t, entity.ErrNotFound, err)
 }

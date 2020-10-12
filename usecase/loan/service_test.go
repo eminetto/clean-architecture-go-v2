@@ -3,11 +3,10 @@ package loan
 import (
 	"testing"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain"
-	bmock "github.com/eminetto/clean-architecture-go-v2/domain/usecase/book/mock"
-	umock "github.com/eminetto/clean-architecture-go-v2/domain/usecase/user/mock"
+	bmock "github.com/eminetto/clean-architecture-go-v2/usecase/book/mock"
+	umock "github.com/eminetto/clean-architecture-go-v2/usecase/user/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -25,9 +24,9 @@ func Test_Borrow(t *testing.T) {
 		b := &entity.Book{
 			ID: entity.NewID(),
 		}
-		uMock.EXPECT().GetUser(u.ID).Return(nil, domain.ErrNotFound)
+		uMock.EXPECT().GetUser(u.ID).Return(nil, entity.ErrNotFound)
 		err := uc.Borrow(u, b)
-		assert.Equal(t, domain.ErrNotFound, err)
+		assert.Equal(t, entity.ErrNotFound, err)
 	})
 	t.Run("book not found", func(t *testing.T) {
 		u := &entity.User{
@@ -37,9 +36,9 @@ func Test_Borrow(t *testing.T) {
 			ID: entity.NewID(),
 		}
 		uMock.EXPECT().GetUser(u.ID).Return(u, nil)
-		bMock.EXPECT().GetBook(b.ID).Return(nil, domain.ErrNotFound)
+		bMock.EXPECT().GetBook(b.ID).Return(nil, entity.ErrNotFound)
 		err := uc.Borrow(u, b)
-		assert.Equal(t, domain.ErrNotFound, err)
+		assert.Equal(t, entity.ErrNotFound, err)
 	})
 	t.Run("not enough books to borrow", func(t *testing.T) {
 		u := &entity.User{
@@ -52,7 +51,7 @@ func Test_Borrow(t *testing.T) {
 		uMock.EXPECT().GetUser(u.ID).Return(u, nil)
 		bMock.EXPECT().GetBook(b.ID).Return(b, nil)
 		err := uc.Borrow(u, b)
-		assert.Equal(t, domain.ErrNotEnoughBooks, err)
+		assert.Equal(t, entity.ErrNotEnoughBooks, err)
 	})
 	t.Run("book already borrowed", func(t *testing.T) {
 		u := &entity.User{
@@ -66,7 +65,7 @@ func Test_Borrow(t *testing.T) {
 		uMock.EXPECT().GetUser(u.ID).Return(u, nil)
 		bMock.EXPECT().GetBook(b.ID).Return(b, nil)
 		err := uc.Borrow(u, b)
-		assert.Equal(t, domain.ErrBookAlreadyBorrowed, err)
+		assert.Equal(t, entity.ErrBookAlreadyBorrowed, err)
 	})
 	t.Run("sucess", func(t *testing.T) {
 		u := &entity.User{
@@ -95,9 +94,9 @@ func Test_Return(t *testing.T) {
 		b := &entity.Book{
 			ID: entity.NewID(),
 		}
-		bMock.EXPECT().GetBook(b.ID).Return(nil, domain.ErrNotFound)
+		bMock.EXPECT().GetBook(b.ID).Return(nil, entity.ErrNotFound)
 		err := uc.Return(b)
-		assert.Equal(t, domain.ErrNotFound, err)
+		assert.Equal(t, entity.ErrNotFound, err)
 	})
 	t.Run("book not borrowed", func(t *testing.T) {
 		u := &entity.User{
@@ -109,7 +108,7 @@ func Test_Return(t *testing.T) {
 		bMock.EXPECT().GetBook(b.ID).Return(b, nil)
 		uMock.EXPECT().ListUsers().Return([]*entity.User{u}, nil)
 		err := uc.Return(b)
-		assert.Equal(t, domain.ErrBookNotBorrowed, err)
+		assert.Equal(t, entity.ErrBookNotBorrowed, err)
 	})
 	t.Run("success", func(t *testing.T) {
 		u := &entity.User{

@@ -5,13 +5,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/user"
-
-	"github.com/eminetto/clean-architecture-go-v2/domain"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/user"
 
 	"github.com/eminetto/clean-architecture-go-v2/api/presenter"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
@@ -30,7 +28,7 @@ func listUsers(service user.UseCase) http.Handler {
 			data, err = service.SearchUsers(name)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		if err != nil && err != domain.ErrNotFound {
+		if err != nil && err != entity.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return
@@ -108,7 +106,7 @@ func getUser(service user.UseCase) http.Handler {
 		}
 		data, err := service.GetUser(id)
 		w.Header().Set("Content-Type", "application/json")
-		if err != nil && err != domain.ErrNotFound {
+		if err != nil && err != entity.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return

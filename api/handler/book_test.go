@@ -8,11 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 
 	"github.com/codegangsta/negroni"
-	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/book/mock"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/book/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
@@ -49,7 +48,7 @@ func Test_listBooks_NotFound(t *testing.T) {
 	defer ts.Close()
 	service.EXPECT().
 		SearchBooks("book of books").
-		Return(nil, domain.ErrNotFound)
+		Return(nil, entity.ErrNotFound)
 	res, err := http.Get(ts.URL + "?title=book+of+books")
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)

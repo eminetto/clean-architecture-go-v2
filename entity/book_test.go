@@ -3,8 +3,7 @@ package entity_test
 import (
 	"testing"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -37,28 +36,28 @@ func TestBookValidate(t *testing.T) {
 			author:   "Neil Gaiman",
 			pages:    100,
 			quantity: 0,
-			want:     domain.ErrInvalidEntity,
+			want:     entity.ErrInvalidEntity,
 		},
 		{
 			title:    "",
 			author:   "Neil Gaiman",
 			pages:    100,
 			quantity: 1,
-			want:     domain.ErrInvalidEntity,
+			want:     entity.ErrInvalidEntity,
 		},
 		{
 			title:    "American Gods",
 			author:   "",
 			pages:    100,
 			quantity: 1,
-			want:     domain.ErrInvalidEntity,
+			want:     entity.ErrInvalidEntity,
 		},
 		{
 			title:    "American Gods",
 			author:   "Neil Gaiman",
 			pages:    0,
 			quantity: 1,
-			want:     domain.ErrInvalidEntity,
+			want:     entity.ErrInvalidEntity,
 		},
 	}
 	for _, tc := range tests {

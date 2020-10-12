@@ -6,13 +6,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 
 	"github.com/codegangsta/negroni"
-	bmock "github.com/eminetto/clean-architecture-go-v2/domain/usecase/book/mock"
-	lmock "github.com/eminetto/clean-architecture-go-v2/domain/usecase/loan/mock"
-	umock "github.com/eminetto/clean-architecture-go-v2/domain/usecase/user/mock"
+	bmock "github.com/eminetto/clean-architecture-go-v2/usecase/book/mock"
+	lmock "github.com/eminetto/clean-architecture-go-v2/usecase/loan/mock"
+	umock "github.com/eminetto/clean-architecture-go-v2/usecase/user/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
@@ -35,7 +34,7 @@ func Test_borrowBook(t *testing.T) {
 	t.Run("book not found", func(t *testing.T) {
 		bID := entity.NewID()
 		uID := entity.NewID()
-		bMock.EXPECT().GetBook(bID).Return(nil, domain.ErrNotFound)
+		bMock.EXPECT().GetBook(bID).Return(nil, entity.ErrNotFound)
 		ts := httptest.NewServer(r)
 		defer ts.Close()
 		res, err := http.Get(fmt.Sprintf("%s/v1/loan/borrow/%s/%s", ts.URL, bID.String(), uID.String()))
@@ -48,7 +47,7 @@ func Test_borrowBook(t *testing.T) {
 		}
 		uID := entity.NewID()
 		bMock.EXPECT().GetBook(b.ID).Return(b, nil)
-		uMock.EXPECT().GetUser(uID).Return(nil, domain.ErrNotFound)
+		uMock.EXPECT().GetUser(uID).Return(nil, entity.ErrNotFound)
 		ts := httptest.NewServer(r)
 		defer ts.Close()
 		res, err := http.Get(fmt.Sprintf("%s/v1/loan/borrow/%s/%s", ts.URL, b.ID.String(), uID.String()))
@@ -89,7 +88,7 @@ func Test_returnBook(t *testing.T) {
 	r.Handle("/v1/loan/return/{book_id}", handler)
 	t.Run("book not found", func(t *testing.T) {
 		bID := entity.NewID()
-		bMock.EXPECT().GetBook(bID).Return(nil, domain.ErrNotFound)
+		bMock.EXPECT().GetBook(bID).Return(nil, entity.ErrNotFound)
 		ts := httptest.NewServer(r)
 		defer ts.Close()
 		res, err := http.Get(fmt.Sprintf("%s/v1/loan/return/%s", ts.URL, bID.String()))

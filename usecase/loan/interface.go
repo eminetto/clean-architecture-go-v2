@@ -1,7 +1,7 @@
 package loan
 
 import (
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 )
 
 //UseCase use case interface

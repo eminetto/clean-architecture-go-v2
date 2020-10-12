@@ -3,7 +3,6 @@ package entity
 import (
 	"time"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -35,7 +34,7 @@ func NewUser(email, password, firstName, lastName string) (*User, error) {
 	u.Password = pwd
 	err = u.Validate()
 	if err != nil {
-		return nil, domain.ErrInvalidEntity
+		return nil, ErrInvalidEntity
 	}
 	return u, nil
 }
@@ -44,7 +43,7 @@ func NewUser(email, password, firstName, lastName string) (*User, error) {
 func (u *User) AddBook(id ID) error {
 	_, err := u.GetBook(id)
 	if err == nil {
-		return domain.ErrBookAlreadyBorrowed
+		return ErrBookAlreadyBorrowed
 	}
 	u.Books = append(u.Books, id)
 	return nil
@@ -58,7 +57,7 @@ func (u *User) RemoveBook(id ID) error {
 			return nil
 		}
 	}
-	return domain.ErrNotFound
+	return ErrNotFound
 }
 
 //GetBook get a book
@@ -68,13 +67,13 @@ func (u *User) GetBook(id ID) (ID, error) {
 			return id, nil
 		}
 	}
-	return id, domain.ErrNotFound
+	return id, ErrNotFound
 }
 
 //Validate validate data
 func (u *User) Validate() error {
 	if u.Email == "" || u.FirstName == "" || u.LastName == "" || u.Password == "" {
-		return domain.ErrInvalidEntity
+		return ErrInvalidEntity
 	}
 
 	return nil

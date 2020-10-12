@@ -3,8 +3,7 @@ package repository
 import (
 	"strings"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 )
 
 //BookInmem in memory repo
@@ -29,8 +28,7 @@ func (r *BookInmem) Create(e *entity.Book) (entity.ID, error) {
 //Get a book
 func (r *BookInmem) Get(id entity.ID) (*entity.Book, error) {
 	if r.m[id] == nil {
-		// return nil, fmt.Errorf("not found")
-		return nil, domain.ErrNotFound
+		return nil, entity.ErrNotFound
 	}
 	return r.m[id], nil
 }
@@ -68,8 +66,7 @@ func (r *BookInmem) List() ([]*entity.Book, error) {
 //Delete a book
 func (r *BookInmem) Delete(id entity.ID) error {
 	if r.m[id] == nil {
-		// return fmt.Errorf("not found")
-		return domain.ErrNotFound
+		return entity.ErrNotFound
 	}
 	r.m[id] = nil
 	return nil

@@ -2,8 +2,6 @@ package entity
 
 import (
 	"time"
-
-	"github.com/eminetto/clean-architecture-go-v2/domain"
 )
 
 //Book data
@@ -29,7 +27,7 @@ func NewBook(title string, author string, pages int, quantity int) (*Book, error
 	}
 	err := b.Validate()
 	if err != nil {
-		return nil, domain.ErrInvalidEntity
+		return nil, ErrInvalidEntity
 	}
 	return b, nil
 }
@@ -37,7 +35,7 @@ func NewBook(title string, author string, pages int, quantity int) (*Book, error
 //Validate validate book
 func (b *Book) Validate() error {
 	if b.Title == "" || b.Author == "" || b.Pages <= 0 || b.Quantity <= 0 {
-		return domain.ErrInvalidEntity
+		return ErrInvalidEntity
 	}
 	return nil
 }

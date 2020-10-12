@@ -5,14 +5,12 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
-
-	"github.com/eminetto/clean-architecture-go-v2/domain"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/book"
 
 	"github.com/eminetto/clean-architecture-go-v2/api/presenter"
 
 	"github.com/codegangsta/negroni"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 	"github.com/gorilla/mux"
 )
 
@@ -29,7 +27,7 @@ func listBooks(service book.UseCase) http.Handler {
 			data, err = service.SearchBooks(title)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		if err != nil && err != domain.ErrNotFound {
+		if err != nil && err != entity.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return
@@ -108,7 +106,7 @@ func getBook(service book.UseCase) http.Handler {
 			return
 		}
 		data, err := service.GetBook(id)
-		if err != nil && err != domain.ErrNotFound {
+		if err != nil && err != entity.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return

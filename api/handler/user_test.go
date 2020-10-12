@@ -10,9 +10,8 @@ import (
 
 	"github.com/codegangsta/negroni"
 	"github.com/eminetto/clean-architecture-go-v2/api/presenter"
-	"github.com/eminetto/clean-architecture-go-v2/domain"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
-	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/user/mock"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/user/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
@@ -49,7 +48,7 @@ func Test_listUsers_NotFound(t *testing.T) {
 	defer ts.Close()
 	m.EXPECT().
 		SearchUsers("dio").
-		Return(nil, domain.ErrNotFound)
+		Return(nil, entity.ErrNotFound)
 	res, err := http.Get(ts.URL + "?name=dio")
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)

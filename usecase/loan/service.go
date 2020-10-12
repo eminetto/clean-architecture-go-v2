@@ -1,10 +1,9 @@
 package loan
 
 import (
-	"github.com/eminetto/clean-architecture-go-v2/domain"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
-	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
-	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/user"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/book"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/user"
 )
 
 //Service loan usecase
@@ -32,7 +31,7 @@ func (s *Service) Borrow(u *entity.User, b *entity.Book) error {
 		return err
 	}
 	if b.Quantity <= 0 {
-		return domain.ErrNotEnoughBooks
+		return entity.ErrNotEnoughBooks
 	}
 
 	err = u.AddBook(b.ID)
@@ -74,7 +73,7 @@ func (s *Service) Return(b *entity.Book) error {
 		break
 	}
 	if !borrowed {
-		return domain.ErrBookNotBorrowed
+		return entity.ErrBookNotBorrowed
 	}
 	u, err := s.userService.GetUser(borrowedBy)
 	if err != nil {

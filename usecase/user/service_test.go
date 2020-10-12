@@ -6,8 +6,7 @@ import (
 
 	"github.com/eminetto/clean-architecture-go-v2/infra/repository"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -50,7 +49,7 @@ func Test_SearchAndFind(t *testing.T) {
 		assert.Equal(t, "Osbourne", c[0].LastName)
 
 		c, err = m.SearchUsers("dio")
-		assert.Equal(t, domain.ErrNotFound, err)
+		assert.Equal(t, entity.ErrNotFound, err)
 		assert.Nil(t, c)
 	})
 	t.Run("list all", func(t *testing.T) {
@@ -91,12 +90,12 @@ func TestDelete(t *testing.T) {
 	u2ID, _ := m.CreateUser(u2.Email, u2.Password, u2.FirstName, u2.LastName)
 
 	err := m.DeleteUser(u1.ID)
-	assert.Equal(t, domain.ErrNotFound, err)
+	assert.Equal(t, entity.ErrNotFound, err)
 
 	err = m.DeleteUser(u2ID)
 	assert.Nil(t, err)
 	_, err = m.GetUser(u2ID)
-	assert.Equal(t, domain.ErrNotFound, err)
+	assert.Equal(t, entity.ErrNotFound, err)
 
 	u3 := newFixtureUser()
 	id, _ := m.CreateUser(u3.Email, u3.Password, u3.FirstName, u3.LastName)
@@ -104,5 +103,5 @@ func TestDelete(t *testing.T) {
 	saved.Books = []entity.ID{entity.NewID()}
 	_ = m.UpdateUser(saved)
 	err = m.DeleteUser(id)
-	assert.Equal(t, domain.ErrCannotBeDeleted, err)
+	assert.Equal(t, entity.ErrCannotBeDeleted, err)
 }

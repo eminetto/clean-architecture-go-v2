@@ -9,11 +9,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/book"
-	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/user"
 	"github.com/eminetto/clean-architecture-go-v2/infra/repository"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/book"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/user"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/loan"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/loan"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 

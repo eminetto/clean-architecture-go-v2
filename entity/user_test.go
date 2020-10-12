@@ -3,8 +3,7 @@ package entity_test
 import (
 	"testing"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,14 +31,14 @@ func TestAddBook(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, 1, len(u.Books))
 	err = u.AddBook(bID)
-	assert.Equal(t, domain.ErrBookAlreadyBorrowed, err)
+	assert.Equal(t, entity.ErrBookAlreadyBorrowed, err)
 
 }
 
 func TestRemoveBook(t *testing.T) {
 	u, _ := entity.NewUser("sjobs@apple.com", "new_password", "Steve", "Jobs")
 	err := u.RemoveBook(entity.NewID())
-	assert.Equal(t, domain.ErrNotFound, err)
+	assert.Equal(t, entity.ErrNotFound, err)
 	bID := entity.NewID()
 	_ = u.AddBook(bID)
 	err = u.RemoveBook(bID)
@@ -54,7 +53,7 @@ func TestGetBook(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, id, bID)
 	_, err = u.GetBook(entity.NewID())
-	assert.Equal(t, domain.ErrNotFound, err)
+	assert.Equal(t, entity.ErrNotFound, err)
 }
 
 func TestUserValidate(t *testing.T) {
@@ -79,7 +78,7 @@ func TestUserValidate(t *testing.T) {
 			password:  "new_password",
 			firstName: "Steve",
 			lastName:  "Jobs",
-			want:      domain.ErrInvalidEntity,
+			want:      entity.ErrInvalidEntity,
 		},
 		{
 			email:     "sjobs@apple.com",
@@ -93,14 +92,14 @@ func TestUserValidate(t *testing.T) {
 			password:  "new_password",
 			firstName: "",
 			lastName:  "Jobs",
-			want:      domain.ErrInvalidEntity,
+			want:      entity.ErrInvalidEntity,
 		},
 		{
 			email:     "sjobs@apple.com",
 			password:  "new_password",
 			firstName: "Steve",
 			lastName:  "",
-			want:      domain.ErrInvalidEntity,
+			want:      entity.ErrInvalidEntity,
 		},
 	}
 	for _, tc := range tests {

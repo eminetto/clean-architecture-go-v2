@@ -4,9 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain"
-
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 )
 
 //Service  interface
@@ -49,13 +47,13 @@ func (s *Service) ListUsers() ([]*entity.User, error) {
 func (s *Service) DeleteUser(id entity.ID) error {
 	u, err := s.GetUser(id)
 	if u == nil {
-		return domain.ErrNotFound
+		return entity.ErrNotFound
 	}
 	if err != nil {
 		return err
 	}
 	if len(u.Books) > 0 {
-		return domain.ErrCannotBeDeleted
+		return entity.ErrCannotBeDeleted
 	}
 	return s.repo.Delete(id)
 }
@@ -64,7 +62,7 @@ func (s *Service) DeleteUser(id entity.ID) error {
 func (s *Service) UpdateUser(e *entity.User) error {
 	err := e.Validate()
 	if err != nil {
-		return domain.ErrInvalidEntity
+		return entity.ErrInvalidEntity
 	}
 	e.UpdatedAt = time.Now()
 	return s.repo.Update(e)

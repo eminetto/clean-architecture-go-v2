@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 )
 
 //BookMySQL mysql repo
