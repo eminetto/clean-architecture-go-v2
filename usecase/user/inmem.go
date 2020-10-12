@@ -1,4 +1,4 @@
-package repository
+package user
 
 import (
 	"fmt"
@@ -7,27 +7,27 @@ import (
 	"github.com/eminetto/clean-architecture-go-v2/entity"
 )
 
-//UserInmem in memory repo
-type UserInmem struct {
+//inmem in memory repo
+type inmem struct {
 	m map[entity.ID]*entity.User
 }
 
-//NewUserInmem create new repository
-func NewUserInmem() *UserInmem {
+//newInmem create new repository
+func newInmem() *inmem {
 	var m = map[entity.ID]*entity.User{}
-	return &UserInmem{
+	return &inmem{
 		m: m,
 	}
 }
 
 //Create an user
-func (r *UserInmem) Create(e *entity.User) (entity.ID, error) {
+func (r *inmem) Create(e *entity.User) (entity.ID, error) {
 	r.m[e.ID] = e
 	return e.ID, nil
 }
 
 //Get an user
-func (r *UserInmem) Get(id entity.ID) (*entity.User, error) {
+func (r *inmem) Get(id entity.ID) (*entity.User, error) {
 	if r.m[id] == nil {
 		return nil, entity.ErrNotFound
 	}
@@ -35,7 +35,7 @@ func (r *UserInmem) Get(id entity.ID) (*entity.User, error) {
 }
 
 //Update an user
-func (r *UserInmem) Update(e *entity.User) error {
+func (r *inmem) Update(e *entity.User) error {
 	_, err := r.Get(e.ID)
 	if err != nil {
 		return err
@@ -45,7 +45,7 @@ func (r *UserInmem) Update(e *entity.User) error {
 }
 
 //Search users
-func (r *UserInmem) Search(query string) ([]*entity.User, error) {
+func (r *inmem) Search(query string) ([]*entity.User, error) {
 	var d []*entity.User
 	for _, j := range r.m {
 		if strings.Contains(strings.ToLower(j.FirstName), query) {
@@ -60,7 +60,7 @@ func (r *UserInmem) Search(query string) ([]*entity.User, error) {
 }
 
 //List users
-func (r *UserInmem) List() ([]*entity.User, error) {
+func (r *inmem) List() ([]*entity.User, error) {
 	var d []*entity.User
 	for _, j := range r.m {
 		d = append(d, j)
@@ -69,7 +69,7 @@ func (r *UserInmem) List() ([]*entity.User, error) {
 }
 
 //Delete an user
-func (r *UserInmem) Delete(id entity.ID) error {
+func (r *inmem) Delete(id entity.ID) error {
 	if r.m[id] == nil {
 		return fmt.Errorf("not found")
 	}

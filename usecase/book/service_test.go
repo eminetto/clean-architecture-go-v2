@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/eminetto/clean-architecture-go-v2/entity"
-	"github.com/eminetto/clean-architecture-go-v2/infra/repository"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -21,7 +20,7 @@ func newFixtureBook() *entity.Book {
 }
 
 func Test_Create(t *testing.T) {
-	repo := repository.NewBookInmem()
+	repo := newInmem()
 	m := NewService(repo)
 	u := newFixtureBook()
 	_, err := m.CreateBook(u.Title, u.Author, u.Pages, u.Quantity)
@@ -30,7 +29,7 @@ func Test_Create(t *testing.T) {
 }
 
 func Test_SearchAndFind(t *testing.T) {
-	repo := repository.NewBookInmem()
+	repo := newInmem()
 	m := NewService(repo)
 	u1 := newFixtureBook()
 	u2 := newFixtureBook()
@@ -63,7 +62,7 @@ func Test_SearchAndFind(t *testing.T) {
 }
 
 func Test_Update(t *testing.T) {
-	repo := repository.NewBookInmem()
+	repo := newInmem()
 	m := NewService(repo)
 	u := newFixtureBook()
 	id, err := m.CreateBook(u.Title, u.Author, u.Pages, u.Quantity)
@@ -77,7 +76,7 @@ func Test_Update(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	repo := repository.NewBookInmem()
+	repo := newInmem()
 	m := NewService(repo)
 	u1 := newFixtureBook()
 	u2 := newFixtureBook()

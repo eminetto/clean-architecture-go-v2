@@ -1,4 +1,4 @@
-package repository
+package book
 
 import (
 	"strings"
@@ -6,27 +6,27 @@ import (
 	"github.com/eminetto/clean-architecture-go-v2/entity"
 )
 
-//BookInmem in memory repo
-type BookInmem struct {
+//inmem in memory repo
+type inmem struct {
 	m map[entity.ID]*entity.Book
 }
 
-//NewBookInmem create new repository
-func NewBookInmem() *BookInmem {
+//newInmem create new repository
+func newInmem() *inmem {
 	var m = map[entity.ID]*entity.Book{}
-	return &BookInmem{
+	return &inmem{
 		m: m,
 	}
 }
 
 //Create a book
-func (r *BookInmem) Create(e *entity.Book) (entity.ID, error) {
+func (r *inmem) Create(e *entity.Book) (entity.ID, error) {
 	r.m[e.ID] = e
 	return e.ID, nil
 }
 
 //Get a book
-func (r *BookInmem) Get(id entity.ID) (*entity.Book, error) {
+func (r *inmem) Get(id entity.ID) (*entity.Book, error) {
 	if r.m[id] == nil {
 		return nil, entity.ErrNotFound
 	}
@@ -34,7 +34,7 @@ func (r *BookInmem) Get(id entity.ID) (*entity.Book, error) {
 }
 
 //Update a book
-func (r *BookInmem) Update(e *entity.Book) error {
+func (r *inmem) Update(e *entity.Book) error {
 	_, err := r.Get(e.ID)
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func (r *BookInmem) Update(e *entity.Book) error {
 }
 
 //Search books
-func (r *BookInmem) Search(query string) ([]*entity.Book, error) {
+func (r *inmem) Search(query string) ([]*entity.Book, error) {
 	var d []*entity.Book
 	for _, j := range r.m {
 		if strings.Contains(strings.ToLower(j.Title), query) {
@@ -55,7 +55,7 @@ func (r *BookInmem) Search(query string) ([]*entity.Book, error) {
 }
 
 //List books
-func (r *BookInmem) List() ([]*entity.Book, error) {
+func (r *inmem) List() ([]*entity.Book, error) {
 	var d []*entity.Book
 	for _, j := range r.m {
 		d = append(d, j)
@@ -64,7 +64,7 @@ func (r *BookInmem) List() ([]*entity.Book, error) {
 }
 
 //Delete a book
-func (r *BookInmem) Delete(id entity.ID) error {
+func (r *inmem) Delete(id entity.ID) error {
 	if r.m[id] == nil {
 		return entity.ErrNotFound
 	}

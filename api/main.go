@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/eminetto/clean-architecture-go-v2/infra/repository"
+	"github.com/eminetto/clean-architecture-go-v2/driver/repository"
 	"github.com/eminetto/clean-architecture-go-v2/usecase/book"
 	"github.com/eminetto/clean-architecture-go-v2/usecase/user"
 
