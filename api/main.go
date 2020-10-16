@@ -9,13 +9,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/eminetto/clean-architecture-go-v2/pkg/password"
+	"github.com/eminetto/clean-architecture-go-v2/driver/repository"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/book"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/user"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/usecase/loan"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/loan"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
-
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity/book"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/codegangsta/negroni"
@@ -37,13 +36,13 @@ func main() {
 	}
 	defer db.Close()
 
-	bookRepo := book.NewMySQLRepository(db)
-	bookManager := book.NewManager(bookRepo)
+	bookRepo := repository.NewBookMySQL(db)
+	bookService := book.NewService(bookRepo)
 
-	userRepo := user.NewMySQLRepoRepository(db)
-	userManager := user.NewManager(userRepo, password.NewService())
+	userRepo := repository.NewUserMySQL(db)
+	userService := user.NewService(userRepo)
 
-	loanUseCase := loan.NewUseCase(userManager, bookManager)
+	loanUseCase := loan.NewService(userService, bookService)
 
 	metricService, err := metric.NewPrometheusService()
 	if err != nil {
@@ -57,13 +56,13 @@ func main() {
 		negroni.NewLogger(),
 	)
 	//book
-	handler.MakeBookHandlers(r, *n, bookManager)
+	handler.MakeBookHandlers(r, *n, bookService)
 
 	//user
-	handler.MakeUserHandlers(r, *n, userManager)
+	handler.MakeUserHandlers(r, *n, userService)
 
 	//loan
-	handler.MakeLoanHandlers(r, *n, bookManager, userManager, loanUseCase)
+	handler.MakeLoanHandlers(r, *n, bookService, userService, loanUseCase)
 
 	http.Handle("/", r)
 	http.Handle("/metrics", promhttp.Handler())

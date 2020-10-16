@@ -4,34 +4,31 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
-
-	"github.com/eminetto/clean-architecture-go-v2/domain"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/user"
 
 	"github.com/eminetto/clean-architecture-go-v2/api/presenter"
 
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 )
 
-func listUsers(manager user.Manager) http.Handler {
+func listUsers(service user.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error reading users"
-		var data []*user.User
+		var data []*entity.User
 		var err error
 		name := r.URL.Query().Get("name")
 		switch {
 		case name == "":
-			data, err = manager.List()
+			data, err = service.ListUsers()
 		default:
-			data, err = manager.Search(name)
+			data, err = service.SearchUsers(name)
 		}
 		w.Header().Set("Content-Type", "application/json")
-		if err != nil && err != domain.ErrNotFound {
+		if err != nil && err != entity.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return
@@ -58,7 +55,7 @@ func listUsers(manager user.Manager) http.Handler {
 	})
 }
 
-func createUser(manager user.Manager) http.Handler {
+func createUser(service user.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error adding user"
 		var input struct {
@@ -74,16 +71,7 @@ func createUser(manager user.Manager) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		//TODO: validate data ;)
-		u := &user.User{
-			ID:        entity.NewID(),
-			Email:     input.Email,
-			Password:  input.Password,
-			FirstName: input.FirstName,
-			LastName:  input.LastName,
-			CreatedAt: time.Now(),
-		}
-		u.ID, err = manager.Create(u)
+		id, err := service.CreateUser(input.Email, input.Password, input.FirstName, input.LastName)
 		if err != nil {
 			log.Println(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
@@ -91,15 +79,14 @@ func createUser(manager user.Manager) http.Handler {
 			return
 		}
 		toJ := &presenter.User{
-			ID:        u.ID,
-			Email:     u.Email,
-			FirstName: u.FirstName,
-			LastName:  u.LastName,
+			ID:        id,
+			Email:     input.Email,
+			FirstName: input.FirstName,
+			LastName:  input.LastName,
 		}
 
 		w.WriteHeader(http.StatusCreated)
 		if err := json.NewEncoder(w).Encode(toJ); err != nil {
-			log.Println(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return
@@ -107,7 +94,7 @@ func createUser(manager user.Manager) http.Handler {
 	})
 }
 
-func getUser(manager user.Manager) http.Handler {
+func getUser(service user.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error reading user"
 		vars := mux.Vars(r)
@@ -117,9 +104,9 @@ func getUser(manager user.Manager) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		data, err := manager.Get(id)
+		data, err := service.GetUser(id)
 		w.Header().Set("Content-Type", "application/json")
-		if err != nil && err != domain.ErrNotFound {
+		if err != nil && err != entity.ErrNotFound {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
 			return
@@ -143,7 +130,7 @@ func getUser(manager user.Manager) http.Handler {
 	})
 }
 
-func deleteUser(manager user.Manager) http.Handler {
+func deleteUser(service user.UseCase) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errorMessage := "Error removing user"
 		vars := mux.Vars(r)
@@ -153,7 +140,7 @@ func deleteUser(manager user.Manager) http.Handler {
 			w.Write([]byte(errorMessage))
 			return
 		}
-		err = manager.Delete(id)
+		err = service.DeleteUser(id)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(errorMessage))
@@ -163,20 +150,20 @@ func deleteUser(manager user.Manager) http.Handler {
 }
 
 //MakeUserHandlers make url handlers
-func MakeUserHandlers(r *mux.Router, n negroni.Negroni, manager user.Manager) {
+func MakeUserHandlers(r *mux.Router, n negroni.Negroni, service user.UseCase) {
 	r.Handle("/v1/user", n.With(
-		negroni.Wrap(listUsers(manager)),
+		negroni.Wrap(listUsers(service)),
 	)).Methods("GET", "OPTIONS").Name("listUsers")
 
 	r.Handle("/v1/user", n.With(
-		negroni.Wrap(createUser(manager)),
+		negroni.Wrap(createUser(service)),
 	)).Methods("POST", "OPTIONS").Name("createUser")
 
 	r.Handle("/v1/user/{id}", n.With(
-		negroni.Wrap(getUser(manager)),
+		negroni.Wrap(getUser(service)),
 	)).Methods("GET", "OPTIONS").Name("getUser")
 
 	r.Handle("/v1/user/{id}", n.With(
-		negroni.Wrap(deleteUser(manager)),
+		negroni.Wrap(deleteUser(service)),
 	)).Methods("DELETE", "OPTIONS").Name("deleteUser")
 }
