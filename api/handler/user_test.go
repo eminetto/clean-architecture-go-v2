@@ -10,10 +10,8 @@ import (
 
 	"github.com/codegangsta/negroni"
 	"github.com/eminetto/clean-architecture-go-v2/api/presenter"
-	"github.com/eminetto/clean-architecture-go-v2/domain"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user"
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity/user/mock"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
+	"github.com/eminetto/clean-architecture-go-v2/usecase/user/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
@@ -22,17 +20,19 @@ import (
 func Test_listUsers(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	m := mock.NewMockManager(controller)
+	m := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
 	MakeUserHandlers(r, *n, m)
 	path, err := r.GetRoute("listUsers").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/user", path)
-	u := user.NewFixtureUser()
+	u := &entity.User{
+		ID: entity.NewID(),
+	}
 	m.EXPECT().
-		List().
-		Return([]*user.User{u}, nil)
+		ListUsers().
+		Return([]*entity.User{u}, nil)
 	ts := httptest.NewServer(listUsers(m))
 	defer ts.Close()
 	res, err := http.Get(ts.URL)
@@ -43,12 +43,12 @@ func Test_listUsers(t *testing.T) {
 func Test_listUsers_NotFound(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	m := mock.NewMockManager(controller)
+	m := mock.NewMockUseCase(controller)
 	ts := httptest.NewServer(listUsers(m))
 	defer ts.Close()
 	m.EXPECT().
-		Search("dio").
-		Return(nil, domain.ErrNotFound)
+		SearchUsers("dio").
+		Return(nil, entity.ErrNotFound)
 	res, err := http.Get(ts.URL + "?name=dio")
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusNotFound, res.StatusCode)
@@ -57,11 +57,13 @@ func Test_listUsers_NotFound(t *testing.T) {
 func Test_listUsers_Search(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	m := mock.NewMockManager(controller)
-	u := user.NewFixtureUser()
+	m := mock.NewMockUseCase(controller)
+	u := &entity.User{
+		ID: entity.NewID(),
+	}
 	m.EXPECT().
-		Search("ozzy").
-		Return([]*user.User{u}, nil)
+		SearchUsers("ozzy").
+		Return([]*entity.User{u}, nil)
 	ts := httptest.NewServer(listUsers(m))
 	defer ts.Close()
 	res, err := http.Get(ts.URL + "?name=ozzy")
@@ -72,7 +74,7 @@ func Test_listUsers_Search(t *testing.T) {
 func Test_createUser(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	m := mock.NewMockManager(controller)
+	m := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
 	MakeUserHandlers(r, *n, m)
@@ -81,7 +83,7 @@ func Test_createUser(t *testing.T) {
 	assert.Equal(t, "/v1/user", path)
 
 	m.EXPECT().
-		Create(gomock.Any()).
+		CreateUser(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 		Return(entity.NewID(), nil)
 	h := createUser(m)
 
@@ -105,16 +107,18 @@ func Test_createUser(t *testing.T) {
 func Test_getUser(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	m := mock.NewMockManager(controller)
+	m := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
 	MakeUserHandlers(r, *n, m)
 	path, err := r.GetRoute("getUser").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/user/{id}", path)
-	u := user.NewFixtureUser()
+	u := &entity.User{
+		ID: entity.NewID(),
+	}
 	m.EXPECT().
-		Get(u.ID).
+		GetUser(u.ID).
 		Return(u, nil)
 	handler := getUser(m)
 	r.Handle("/v1/user/{id}", handler)
@@ -132,15 +136,17 @@ func Test_getUser(t *testing.T) {
 func Test_deleteUser(t *testing.T) {
 	controller := gomock.NewController(t)
 	defer controller.Finish()
-	m := mock.NewMockManager(controller)
+	m := mock.NewMockUseCase(controller)
 	r := mux.NewRouter()
 	n := negroni.New()
 	MakeUserHandlers(r, *n, m)
 	path, err := r.GetRoute("deleteUser").GetPathTemplate()
 	assert.Nil(t, err)
 	assert.Equal(t, "/v1/user/{id}", path)
-	u := user.NewFixtureUser()
-	m.EXPECT().Delete(u.ID).Return(nil)
+	u := &entity.User{
+		ID: entity.NewID(),
+	}
+	m.EXPECT().DeleteUser(u.ID).Return(nil)
 	handler := deleteUser(m)
 	req, _ := http.NewRequest("DELETE", "/v1/user/"+u.ID.String(), nil)
 	r.Handle("/v1/user/{id}", handler).Methods("DELETE", "OPTIONS")

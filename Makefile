@@ -32,9 +32,9 @@ ci: dependencies test
 build-mocks:
 	@go get github.com/golang/mock/gomock
 	@go install github.com/golang/mock/mockgen
-	@~/go/bin/mockgen -source=domain/entity/book/interface.go -destination=domain/entity/book/mock/book.go -package=mock
-	@~/go/bin/mockgen -source=domain/entity/user/interface.go -destination=domain/entity/user/mock/user.go -package=mock
-	@~/go/bin/mockgen -source=domain/usecase/loan/interface.go -destination=domain/usecase/loan/mock/loan.go -package=mock
+	@~/go/bin/mockgen -source=usecase/book/interface.go -destination=usecase/book/mock/book.go -package=mock
+	@~/go/bin/mockgen -source=usecase/user/interface.go -destination=usecase/user/mock/user.go -package=mock
+	@~/go/bin/mockgen -source=usecase/loan/interface.go -destination=usecase/loan/mock/loan.go -package=mock
 
 test:
 	go test -tags testing ./...

@@ -1,7 +1,7 @@
 package presenter
 
 import (
-	"github.com/eminetto/clean-architecture-go-v2/domain/entity"
+	"github.com/eminetto/clean-architecture-go-v2/entity"
 )
 
 //User data
