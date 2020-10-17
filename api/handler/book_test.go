@@ -147,7 +147,7 @@ func Test_deleteBook(t *testing.T) {
 	}
 	service.EXPECT().DeleteBook(b.ID).Return(nil)
 	handler := deleteBook(service)
-	req, _ := http.NewRequest("DELETE", "/v1/bookmark/"+b.ID.String(), nil)
+	req, _ := http.NewRequest("DELETE", "/v1/book/"+b.ID.String(), nil)
 	r.Handle("/v1/bookmark/{id}", handler).Methods("DELETE", "OPTIONS")
 	rr := httptest.NewRecorder()
 	r.ServeHTTP(rr, req)
