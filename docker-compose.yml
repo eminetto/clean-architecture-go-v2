@@ -4,7 +4,7 @@ services:
     image: mysql:5.7
     command: --default-authentication-plugin=mysql_native_password --init-file /data/application/init.sql
     volumes:
-      - ./ops/init.sql:/data/application/init.sql
+      - ./ops/db/init.sql:/data/application/init.sql
     environment:
       MYSQL_ROOT_PASSWORD: clean_architecture_go_v2
       MYSQL_DATABASE: clean_architecture_go_v2
