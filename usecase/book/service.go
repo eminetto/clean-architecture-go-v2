@@ -23,7 +23,7 @@ func NewService(r Repository) *Service {
 func (s *Service) CreateBook(title string, author string, pages int, quantity int) (entity.ID, error) {
 	b, err := entity.NewBook(title, author, pages, quantity)
 	if err != nil {
-		return b.ID, err
+		return entity.NewID(), err
 	}
 	return s.repo.Create(b)
 }
