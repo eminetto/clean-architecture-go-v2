@@ -1,21 +1,30 @@
 module github.com/eminetto/clean-architecture-go-v2
 
-go 1.14
+go 1.18
 
 require (
-	github.com/asaskevich/govalidator v0.0.0-20200428143746-21a406dcc535
 	github.com/codegangsta/negroni v0.3.0
-	github.com/eminetto/clean-architecture-go v0.0.0-20200312132632-3195811c74a3
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/golang/mock v1.4.4
+	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/context v1.1.1
 	github.com/gorilla/mux v1.6.2
-	github.com/jimlawless/whereami v0.0.0-20160417220522-aebf70d4a772 // indirect
-	github.com/juju/mgosession v0.0.0-20170206150231-9ae6df2882cd
 	github.com/prometheus/client_golang v1.7.1
 	github.com/stretchr/testify v1.6.1
-	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
-	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
-	rsc.io/quote/v3 v3.1.0 // indirect
+	golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
+)
+
+require (
+	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/cespare/xxhash/v2 v2.1.1 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/golang/protobuf v1.4.2 // indirect
+	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/prometheus/client_model v0.2.0 // indirect
+	github.com/prometheus/common v0.10.0 // indirect
+	github.com/prometheus/procfs v0.1.3 // indirect
+	golang.org/x/sys v0.0.0-20210510120138-977fb7262007 // indirect
+	google.golang.org/protobuf v1.23.0 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
 )
