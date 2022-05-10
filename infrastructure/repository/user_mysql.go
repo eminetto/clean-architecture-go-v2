@@ -102,13 +102,13 @@ func (r *UserMySQL) Update(e *entity.User) error {
 
 //Search users
 func (r *UserMySQL) Search(query string) ([]*entity.User, error) {
-	stmt, err := r.db.Prepare(`select id from user where name like ?`)
+	stmt, err := r.db.Prepare(`select id from user where first_name like ?`)
 	if err != nil {
 		return nil, err
 	}
 	defer stmt.Close()
 	var ids []entity.ID
-	rows, err := stmt.Query()
+	rows, err := stmt.Query("%" + query + "%")
 	if err != nil {
 		return nil, err
 	}
