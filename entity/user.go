@@ -72,7 +72,7 @@ func (u *User) GetBook(id ID) (ID, error) {
 
 //Validate validate data
 func (u *User) Validate() error {
-	if u.Email == "" || u.FirstName == "" || u.LastName == "" || u.Password == "" {
+	if u.Email == "" || u.FirstName == "" || u.LastName == "" {
 		return ErrInvalidEntity
 	}
 
