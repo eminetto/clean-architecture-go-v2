@@ -1,6 +1,9 @@
 
 # Clean Architecture in Go
 
+**This old repository doesn't represent what I'm using nowadays.**
+
+
 [![Build Status](https://travis-ci.org/eminetto/clean-architecture-go-v2.svg?branch=master)](https://travis-ci.org/eminetto/clean-architecture-go-v2)
 
 [Post: Clean Architecture, 2 years later](https://eltonminetto.dev/en/post/2020-07-06-clean-architecture-2years-later/)
