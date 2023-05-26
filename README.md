@@ -1,7 +1,7 @@
 
 # Clean Architecture in Go
 
-**This old repository doesn't represent what I'm using nowadays.**
+**This old repository doesn't represent what I'm using nowadays. In 2023, I am using and recommending what my colleagues and I have described in [this post](https://medium.com/inside-picpay/organizing-projects-and-defining-names-in-go-7f0eab45375d)**
 
 
 [![Build Status](https://travis-ci.org/eminetto/clean-architecture-go-v2.svg?branch=master)](https://travis-ci.org/eminetto/clean-architecture-go-v2)
